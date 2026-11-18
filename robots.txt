@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bdidier1.github.io/Portfolio_BUT3/sitemap.xml

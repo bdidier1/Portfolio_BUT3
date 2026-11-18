@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.jsdelivr.net; connect-src 'self' https://api.open-meteo.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action https://formsubmit.co; frame-src 'none'; worker-src 'none'; manifest-src 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Baptiste DIDIER - Portfolio BUT3</title>
+  <meta name="description" content="Portfolio de Baptiste Didier, étudiant en 3e année de BUT Informatique à l'IUT Nord Franche-Comté (Belfort) : stages chez EzDEV et Actemium, application ParkTracker publiée sur les stores, outils vidéo et d'automatisation, projets en Java, Python, Vue.js et Node.js.">
+  <meta name="keywords" content="Baptiste Didier, portfolio, développeur, BUT Informatique, IUT Nord Franche-Comté, Belfort, Actemium, Power Apps, Copilot Studio, ParkTracker, Java, Python, pytest, Vue.js, Node.js, PostgreSQL, Git">
+  <meta name="author" content="Baptiste Didier">
+  <meta name="theme-color" content="#05070b">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://bdidier1.github.io/Portfolio_BUT3/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Baptiste DIDIER - Portfolio BUT3">
+  <meta property="og:description" content="Étudiant en BUT Informatique : projets, compétences, parcours et contact.">
+  <meta property="og:url" content="https://bdidier1.github.io/Portfolio_BUT3/">
+  <meta property="og:image" content="https://bdidier1.github.io/Portfolio_BUT3/img/baptiste.jpg">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="img/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=20261118a">
+  <link rel="stylesheet" href="css/classic.css?v=20261118a">
+  <script src="js/boot.js?v=20261118a" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#fenetre">Aller au contenu</a>
+
+  <!-- Ciel : météo réelle de Belfort -->
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <canvas id="precip" aria-hidden="true"></canvas>
+
+  <!-- Scène 3D -->
+  <div id="scene" aria-hidden="true"></div>
+
+  <!-- Menu de la version classique -->
+  <aside class="classic-side" aria-label="Menu">
+    <a class="classic-side__me" href="#p-apropos">
+      <img src="img/baptiste.webp" alt="" width="64" height="64">
+      <span><strong>Baptiste Didier</strong><small>Développeur d'applications · BUT Informatique</small></span>
+    </a>
+    <button type="button" class="classic-burger" id="classic-burger" aria-expanded="false" aria-controls="classic-menu" aria-label="Ouvrir le menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="classic-side__menu" id="classic-menu">
+      <nav class="classic-nav" aria-label="Sections">
+        <a href="#p-apropos" data-k="apropos">À propos</a>
+        <a href="#p-projets" data-k="projets">Projets</a>
+        <a href="#p-competences" data-k="competences">Compétences</a>
+        <a href="#p-parcours" data-k="parcours">Parcours</a>
+        <a href="#p-veille" data-k="veille">Veille</a>
+        <a href="#p-cv" data-k="cv">CV</a>
+        <a href="#p-contact" data-k="contact">Contact</a>
+      </nav>
+      <div class="classic-side__foot">
+        <a class="classic-side__cv" href="cv/DIDIER_Baptiste_CV.pdf" download="Baptiste_DIDIER_CV.pdf">Télécharger mon CV</a>
+        <a href="https://github.com/bdidier1" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="mailto:baptiste.didier@proton.me">baptiste.didier@proton.me</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Titre du site (chambre 3D) -->
+  <header class="title" id="title">
+    <h1 class="title__name">Baptiste DIDIER</h1>
+    <p class="title__sub"><span class="c-green">&gt;</span> Développeur d'applications · BUT Informatique<span class="caret">_</span></p>
+  </header>
+
+  <p class="classic-note" id="classic-note" hidden></p>
+
+  <!-- En haut à droite : retour à la chambre et passage 3D / classique -->
+  <div class="topright">
+    <div id="modebar" class="modebar" hidden>
+      <button type="button" id="mode-close">← Retour à la chambre</button>
+    </div>
+    <a class="modeswitch" id="mode-switch" href="?vue=classique">Vue classique</a>
+  </div>
+
+  <!-- Bouton à gauche : ouvre le menu latéral des sections -->
+  <button type="button" id="nav-toggle" class="navtoggle" aria-expanded="false" aria-controls="drawer" aria-label="Ouvrir le menu des sections">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"/></svg>
+  </button>
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+  <aside id="drawer" class="drawer" aria-label="Menu des sections" inert>
+    <div class="drawer__head">
+      <p class="drawer__title">Explorer la chambre</p>
+      <button type="button" class="drawer__close" id="drawer-close" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <nav class="drawer__nav" aria-label="Sections de la chambre"><ul class="drawer__list" id="drawer-list"></ul></nav>
+    <div class="drawer__foot">
+      <a class="drawer__classic" id="to-classic" href="?vue=classique">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg>
+        <span><strong>Passer à la version classique</strong><small>Tout le contenu sur une seule page, sans 3D : plus simple et plus rapide à lire</small></span>
+      </a>
+      <a class="drawer__cv" href="cv/DIDIER_Baptiste_CV.pdf" download="Baptiste_DIDIER_CV.pdf">Télécharger mon CV (PDF)</a>
+    </div>
+  </aside>
+
+  <div id="sectitle" class="sectitle" hidden><p class="sectitle__name" id="sectitle-name"></p><p class="sectitle__sub" id="sectitle-sub"></p></div>
+  <nav id="secnav" class="secnav" hidden aria-label="Changer de section">
+    <button type="button" id="sec-prev" data-sec="prev"></button>
+    <span id="sec-label"></span>
+    <button type="button" id="sec-next" data-sec="next"></button>
+  </nav>
+  <div id="dock" class="dock" hidden></div>
+
+  <!-- Navigateur affiché sur l'écran du PC -->
+  <div id="browser" class="browser" hidden aria-label="Projets">
+    <div class="browser__top"><span class="browser__dots"><i></i><i></i><i></i></span><div class="browser__tabs" id="btabs" role="tablist"></div></div>
+    <div class="browser__bar"><span class="browser__nav">←&nbsp;&nbsp;→&nbsp;&nbsp;⟳</span><div class="browser__url" id="burl"></div></div>
+    <div class="browser__page" id="bpage"></div>
+  </div>
+
+  <!-- Étiquettes sur les objets de la chambre -->
+  <div id="pins" class="pins"></div>
+
+  <!-- Bulle de dialogue du personnage -->
+  <div id="bubble" class="bubble" role="button" tabindex="0" hidden>
+    <p id="bubble-text"></p>
+  </div>
+
+  <!-- Bulle de pensée : À propos -->
+  <div id="thought" class="thought" hidden>
+    <div class="thought__cloud" id="thought-cloud" role="dialog" aria-label="À propos de Baptiste" tabindex="-1">
+      <svg class="thought__shape" id="thought-shape" aria-hidden="true"><defs><linearGradient id="cloud-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#eef3f9"/></linearGradient></defs><path fill="url(#cloud-fill)" stroke="#d7e0eb" stroke-width="2"/></svg>
+      <button type="button" class="thought__close" id="thought-close" aria-label="Fermer et revenir à la chambre">✕</button>
+      <div class="thought__body" id="thought-body"></div>
+    </div>
+  </div>
+
+  <!-- Aide en bas de l'écran -->
+  <p class="hint" id="hint">Glisse pour tourner · molette pour zoomer · clique sur les objets</p>
+
+  <!-- Fenêtre avec onglets (3D) / contenu de la page (classique) -->
+  <section id="fenetre" class="window" aria-label="Contenu du portfolio" hidden>
+    <div class="window__bar">
+      <div class="tabs" role="tablist" aria-label="Onglets ouverts" id="tabs"></div>
+      <button type="button" class="window__close" id="close" aria-label="Fermer et revenir à la chambre">✕</button>
+    </div>
+
+    <div class="window__body">
+
+      <!-- À propos -->
+      <article id="p-apropos" class="panel" role="tabpanel" data-title="À propos" tabindex="-1">
+        <div class="markdown-body">
+          <div class="profile">
+            <picture>
+              <source srcset="img/baptiste.webp" type="image/webp">
+              <img src="img/baptiste.jpg" alt="Photo de Baptiste Didier" width="480" height="480" loading="lazy" decoding="async">
+            </picture>
+            <div>
+              <h1>Baptiste DIDIER</h1>
+              <p class="subtitle">Étudiant en 3<sup>e</sup> année de BUT Informatique<br>Stage chez Actemium à partir de janvier 2027</p>
+            </div>
+          </div>
+          <p>Je m'appelle <strong>Baptiste Didier</strong> et je suis actuellement étudiant en troisième année de <strong>BUT Informatique</strong> à l'IUT Nord Franche-Comté, dans le parcours <strong>Réalisation d'applications</strong> : conception, développement et validation.</p>
+          <p>Passionné par l'informatique depuis le collège, je m'intéresse particulièrement au <strong>développement logiciel</strong>, à la <strong>conception d'applications</strong> et aux nouvelles solutions technologiques. Au fil de ma formation et de mes projets personnels et universitaires, j'ai pu développer mes compétences dans plusieurs langages et environnements de développement.</p>
+          <p>J'ai également eu l'occasion de mettre mes connaissances en pratique lors de projets en équipe et de mon stage chez <strong>EzDEV</strong>, où j'ai travaillé sur la modernisation d'outils de développement Python et l'automatisation de tests.</p>
+          <p><strong>Curieux, rigoureux et motivé</strong>, j'aime apprendre, relever de nouveaux défis techniques et découvrir de nouvelles technologies. Je réalise également une veille informatique régulière afin de rester informé des évolutions du secteur.</p>
+          <h2>En bref</h2>
+          <dl class="infos">
+            <div><dt>Localisation</dt><dd>Vézelois, Territoire de Belfort (90)</dd></div>
+            <div><dt>Mobilité</dt><dd>Permis B, véhiculé</dd></div>
+            <div><dt>Langues</dt><dd>Français, anglais (B1)</dd></div>
+            <div><dt>Formation</dt><dd>BUT Informatique, IUT Nord Franche-Comté · 3<sup>e</sup> année</dd></div>
+            <div><dt>Expériences</dt><dd>Stage chez EzDEV (avril – juin 2026) · stage chez Actemium dès janvier 2027</dd></div>
+            <div><dt>Loisirs</dt><dd>Football en club depuis 14 ans, jeux vidéo de gestion et de stratégie</dd></div>
+          </dl>
+          <p class="actions">
+            <a class="btn" href="#projets" data-open="projets">Voir mes projets</a>
+            <a class="btn btn--ghost" href="cv/DIDIER_Baptiste_CV.pdf" download="Baptiste_DIDIER_CV.pdf">Télécharger mon CV</a>
+          </p>
+        </div>
+      </article>
+
+      <!-- Projets (aussi affichés sur l'écran 3D du PC) -->
+      <article id="p-projets" class="panel" role="tabpanel" data-title="Projets" tabindex="-1">
+        <h1>Projets</h1>
+        <p class="lead">Mes stages, mon application publiée sur les stores et mes projets les plus aboutis, réalisés à l'IUT ou sur mon temps libre. Choisis une catégorie, puis ouvre un projet pour voir son contexte, ses fonctionnalités, mon rôle et les difficultés rencontrées.</p>
+        <div class="projects" id="projects">
+
+        <section class="card card--soon" id="stage-actemium" data-cat="stage automatisation">
+          <p class="card__file">stage-actemium <span class="badge badge--soon">à venir</span></p>
+          <h2>Actemium : automatiser les tâches de l'entreprise</h2>
+          <p class="meta">À partir de janvier 2027 · Stage de 3e année · Actemium</p>
+          <p>Pour mon stage de 3<sup>e</sup> année, je rejoins <strong>Actemium</strong>. Le sujet : <strong>automatiser des tâches</strong> de l'entreprise avec <strong>Power Apps</strong> et travailler avec des <strong>agents</strong> conçus dans <strong>Copilot Studio</strong>.</p>
+          <h3>Ce qui m'attend</h3>
+          <ul class="list">
+            <li><strong>Power Apps</strong> : créer des applications qui automatisent des tâches du quotidien</li>
+            <li><strong>Copilot Studio</strong> : travailler avec des agents pour assister les équipes</li>
+          </ul>
+          <ul class="tags" aria-label="Technologies"><li>Power Apps</li><li>Copilot Studio</li><li>Automatisation</li></ul>
+          <p class="links">Le stage commence en janvier 2027 : cette fiche sera complétée au fil de la mission.</p>
+        </section>
+
+        <section class="card card--main" id="stage-ezdev" data-cat="stage automatisation">
+          <p class="card__file">stage-ezdev <span class="badge">stage</span></p>
+          <h2 class="card__title"><img class="card__logo" src="img/projets/ezdev.png" alt="" width="240" height="215">EzDEV : moderniser une application de gestion documentaire</h2>
+          <p class="meta">Avril – juin 2026 · Stage de 2e année · EzDEV, Montreux-Château</p>
+          <p>EzDEV développe une application de gestion électronique de documents (GED). Ma mission : la faire passer de <strong>Python 3.11 à Python 3.13 sans rien casser</strong>, en modernisant les outils de développement Python et en <strong>automatisant les tests</strong>.</p>
+          <figure class="diagram" aria-label="Les quatre étapes de la migration">
+            <ol class="flow">
+              <li><strong>1. Audit</strong><span>dépendances et code incompatibles</span></li>
+              <li><strong>2. Mesure</strong><span>couverture des tests existants</span></li>
+              <li><strong>3. Migration</strong><span>adaptation du code à Python 3.13</span></li>
+              <li><strong>4. Automatisation</strong><span>tests et rapports à chaque modification</span></li>
+            </ol>
+            <figcaption>Ma démarche, étape par étape</figcaption>
+          </figure>
+          <h3>Ce que j'ai fait</h3>
+          <ul class="list">
+            <li><strong>Audit</strong> des dépendances et adaptation du code à la nouvelle version</li>
+            <li><strong>Outils d'analyse</strong> du code (LibCST) et de la couverture des tests (coverage.py)</li>
+            <li><strong>Automatisation</strong> des tests et des rapports dans la chaîne d'intégration GitLab</li>
+          </ul>
+          <h3>Le défi</h3>
+          <p>Changer de version sans régression. Plutôt que de corriger au hasard, j'ai d'abord <strong>mesuré ce que les tests couvraient</strong>, puis automatisé leur lancement : chaque modification est vérifiée avant d'être livrée.</p>
+          <h3>Ce que j'en retiens</h3>
+          <p>Sur un code existant, on lit avant d'écrire, et on ne livre rien sans l'avoir testé.</p>
+          <ul class="tags" aria-label="Technologies"><li>Python</li><li>LibCST</li><li>pytest</li><li>coverage.py</li><li>GitLab CI/CD</li></ul>
+          <p class="links">Code privé, propriété de l'entreprise.</p>
+        </section>
+
+        <section class="card card--featured" id="parktracker" data-cat="personnel">
+          <p class="card__file">parktracker <span class="badge badge--live">en ligne</span></p>
+          <h2 class="card__title"><img class="card__logo card__logo--dark" src="img/projets/parktracker-logo.png" alt="" width="128" height="128">ParkTracker : l'application des visiteurs de parcs</h2>
+          <p class="meta">2026 · Projet personnel · application publiée sur l'App Store et Google Play</p>
+          <p>Une application mobile qui transforme chaque visite de parc d'attractions en <strong>aventure mesurable</strong> : elle détecte automatiquement les attractions faites grâce au GPS, compte les pas, la distance et même les <strong>forces G</strong> subies dans les loopings. Plus de 50 parcs sont reconnus, en Europe et aux États-Unis.</p>
+          <figure class="figure--small"><img src="img/projets/parktracker-site.webp" alt="Page d'accueil du site parktracker.fr avec l'application sur un téléphone" width="1200" height="750" loading="lazy" decoding="async"><figcaption>Le site vitrine parktracker.fr</figcaption></figure>
+          <figure class="phones">
+            <img src="img/projets/parktracker-accueil.webp" alt="Écran d'accueil : missions, attractions proches et statistiques" width="360" height="779" loading="lazy" decoding="async">
+            <img src="img/projets/parktracker-parc.webp" alt="Fiche d'un parc : horaires, attractions, avis et météo" width="360" height="779" loading="lazy" decoding="async">
+            <img src="img/projets/parktracker-attente.webp" alt="Fiche d'une attraction avec son temps d'attente en direct" width="360" height="779" loading="lazy" decoding="async">
+            <img src="img/projets/parktracker-classement.webp" alt="Classement des joueurs en points d'expérience" width="360" height="779" loading="lazy" decoding="async">
+            <figcaption>Quelques écrans de l'application (captures de l'App Store)</figcaption>
+          </figure>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Suivi automatique</strong> des attractions, des pas, de la distance, des calories et des forces G</li>
+            <li><strong>Temps d'attente en direct</strong>, courbes d'attente et prévision pour le reste de la journée</li>
+            <li><strong>XP, missions et badges</strong>, et un classement entre amis</li>
+            <li><strong>Avis et photos</strong> sur les parcs et les attractions, et un récap annuel façon « Wrapped »</li>
+            <li><strong>Abonnement Premium</strong> : prédictions d'affluence et alertes quand une file devient courte</li>
+            <li>Traduite en <strong>cinq langues</strong>, avec un <strong>mode hors-ligne</strong></li>
+          </ul>
+          <h3>Mon rôle</h3>
+          <p>Je porte le projet de bout en bout : l'application, le site vitrine, la publication sur les deux stores et les mises à jour, publiées dans un journal des nouveautés.</p>
+          <h3>Le défi</h3>
+          <p>Compter une attraction <strong>sans que l'utilisateur touche à son téléphone</strong>, même application fermée : l'app s'appuie sur la position et sur le temps passé dans la zone de l'attraction. Autre défi : prévoir l'attente de la journée à partir de la fréquentation réelle du parc.</p>
+          <h3>Évolutions</h3>
+          <p>De nouveaux parcs ajoutés régulièrement, et des améliorations à chaque version (1.0.4 → 1.0.8) selon les retours des utilisateurs.</p>
+          <ul class="tags" aria-label="Technologies"><li>Application mobile</li><li>iOS</li><li>Android</li><li>GPS et capteurs</li><li>Abonnements</li><li>Site web</li></ul>
+          <p class="links"><a href="https://parktracker.fr/" target="_blank" rel="noopener noreferrer">Voir le site</a> · <a href="https://apps.apple.com/fr/app/parktracker/id6783854201" target="_blank" rel="noopener noreferrer">App Store</a> · <a href="https://play.google.com/store/apps/details?id=com.parktracker.app" target="_blank" rel="noopener noreferrer">Google Play</a></p>
+        </section>
+
+        <section class="card" id="cutlocal" data-cat="personnel">
+          <p class="card__file">cutlocal</p>
+          <h2>CutLocal : un éditeur vidéo local, façon CapCut</h2>
+          <p class="meta">Sept. – nov. 2026 · Projet personnel</p>
+          <p>Un éditeur vidéo qui tourne <strong>entièrement sur la machine</strong>, dans le navigateur : import instantané, masques de flou, aperçu en temps réel et <strong>export 4K à 60 i/s</strong>. Aucun compte, aucun envoi de fichier, et seulement <strong>~250 Ko de code</strong>, sans Electron ni dépendance npm.</p>
+          <figure><img src="img/projets/cutlocal.webp" alt="Interface de CutLocal : bibliothèque de médias, aperçu, inspecteur du clip et timeline à plusieurs pistes" width="767" height="479" loading="lazy" decoding="async"><figcaption>L'éditeur : médias, aperçu, inspecteur et timeline</figcaption></figure>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Montage multipiste</strong> : vidéo, son, textes stylés, masques, transitions et outils de découpe</li>
+            <li><strong>Import</strong> de fichiers ou par lien (TikTok, Instagram, YouTube) grâce à yt-dlp</li>
+            <li><strong>Aperçu et export</strong> avec exactement les mêmes shaders : ce qu'on voit est ce qui sort</li>
+            <li><strong>Installation en un seul fichier</strong> sous Windows, script pour Linux, et une page d'autotest</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Effets en <strong>WebGL2</strong>, décodage et encodage sur la carte graphique avec <strong>WebCodecs</strong> (NVENC, Quick Sync), et un petit serveur <strong>Node.js</strong> pour les fenêtres de fichiers, les téléchargements et l'assemblage MP4 : environ 17 000 lignes de JavaScript.</p>
+          <h3>Le défi</h3>
+          <p>Rendre un rush 4K 60 fluide. En repensant le décodage (un décodeur par vidéo, le plan suivant préparé une seconde à l'avance, le son lu sans décoder l'image), la lecture est passée d'environ <strong>10 à 178 images par seconde</strong>, et poser un clip sur la timeline de 300 ms à <strong>25 ms</strong>.</p>
+          <ul class="tags" aria-label="Technologies"><li>JavaScript</li><li>WebGL2</li><li>WebCodecs</li><li>Node.js</li><li>ffmpeg</li><li>yt-dlp</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/CapcutLocal" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="clip2ep" data-cat="personnel">
+          <p class="card__file">clip2ep</p>
+          <h2>Clip2EP : le media kit de ma chaîne</h2>
+          <p class="meta">Avr. – nov. 2026 · Projet personnel · site de créateur de contenu</p>
+          <p>Le site officiel de <strong>Clip2EP</strong>, mon compte de vidéos sur les parcs d'attractions : <strong>174 400 abonnés sur TikTok</strong> et <strong>52 100 sur YouTube</strong>. Il sert de media kit aux marques et aux parcs : présentation, audience, partenariats, vidéos et contact.</p>
+          <figure><img src="img/projets/mediakit-parc.webp" alt="Accueil du site Clip2EP : un parc d'attractions en 3D dont chaque attraction mène à une section" width="767" height="479" loading="lazy" decoding="async"><figcaption>L'accueil : un parc en 3D où chaque attraction ouvre une section</figcaption></figure>
+          <div class="gallery">
+            <figure><img src="img/projets/mediakit-stats.webp" alt="Statistiques d'audience TikTok et YouTube : vues, abonnés, genre, âge et pays" width="767" height="479" loading="lazy" decoding="async"><figcaption>Les statistiques d'audience</figcaption></figure>
+            <figure><img src="img/projets/mediakit-videos.webp" alt="Section Mes vidéos présentée comme des billets de parcs, avec les vues par parc" width="767" height="479" loading="lazy" decoding="async"><figcaption>Mes vidéos, rangées par parc</figcaption></figure>
+          </div>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Parc 3D interactif</strong> (Three.js), avec un plan 2D de secours si la 3D n'est pas disponible</li>
+            <li><strong>Statistiques d'audience</strong> TikTok et YouTube : vues, abonnés, âge, genre et pays</li>
+            <li><strong>Toutes mes vidéos</strong>, rangées par parc, et les partenariats</li>
+            <li>Site <strong>multilingue</strong>, thème clair et sombre</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Chaque nuit, une <strong>GitHub Action</strong> lance un script Python (yt-dlp et API YouTube) qui met à jour les chiffres et garde une copie des vignettes, dont les adresses d'origine expirent. Elle vérifie le fichier avant de l'enregistrer, pour ne jamais publier de statistiques vides.</p>
+          <ul class="tags" aria-label="Technologies"><li>JavaScript</li><li>Three.js</li><li>Python</li><li>GitHub Actions</li><li>yt-dlp</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/mediakit" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="auto-ytb" data-cat="personnel automatisation">
+          <p class="card__file">auto-ytb</p>
+          <h2>AUTO YTB : publier sur YouTube en quelques clics</h2>
+          <p class="meta">Sept. – oct. 2026 · Projet personnel · automatisation</p>
+          <p>Un outil local qui récupère une vidéo TikTok, Instagram, X ou YouTube, la <strong>convertit en 4K verticale à 60 i/s</strong>, puis la <strong>publie sur mes chaînes YouTube</strong> avec son titre, sa description, ses hashtags et une date de programmation.</p>
+          <figure><img src="img/projets/autoytb.webp" alt="AUTO YTB : vérification 4K réussie, aperçu de la vidéo et découpage de la durée" width="767" height="479" loading="lazy" decoding="async"><figcaption>Étape 2 : vérification 4K, aperçu et découpage</figcaption></figure>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Publication en trois étapes</strong> : téléchargement et conversion 4K, aperçu avec découpage à la souris, mise en ligne</li>
+            <li><strong>Titre lu à l'écran</strong> par l'OCR de Windows, description et hashtags repris de la vidéo d'origine</li>
+            <li><strong>Vérifications façon YouTube Studio</strong> : qualité, format Short, filigrane, risque de contenu réutilisé</li>
+            <li><strong>Plusieurs chaînes</strong>, et pour chaque vidéo en ligne : programmation, modification et statistiques détaillées</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Un serveur <strong>FastAPI</strong> relié aux API <strong>YouTube Data</strong> et <strong>YouTube Analytics</strong> (connexion OAuth 2.0 avec PKCE), yt-dlp et ffmpeg pour la vidéo (encodage sur la carte graphique), SQLite pour l'historique : environ 4 000 lignes.</p>
+          <h3>Sécurité</h3>
+          <p>Le serveur n'écoute que sur l'ordinateur, les jetons Google sont <strong>chiffrés</strong>, et l'interface est protégée contre les sites malveillants (anti-CSRF, anti-DNS-rebinding, CSP stricte). Les accès ne sont jamais versionnés.</p>
+          <ul class="tags" aria-label="Technologies"><li>Python</li><li>FastAPI</li><li>API YouTube</li><li>OAuth 2.0</li><li>ffmpeg</li><li>OCR</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/AUTO_YTB" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="ticket-twirling" data-cat="personnel">
+          <p class="card__file">ticket-twirling</p>
+          <h2>Caisse du Twirling Club Belfortain</h2>
+          <p class="meta">Juin – juil. 2026 · Projet personnel · pour une association</p>
+          <p>Une application de caisse web pour les événements du club : produits, stocks, ventes, statistiques et <strong>impression automatique des tickets</strong> sur une imprimante thermique, sans fenêtre d'impression.</p>
+          <div class="gallery">
+            <figure><img src="img/projets/ticket-caisse.webp" alt="Écran de caisse : liste des produits et panier client avec le total" width="767" height="479" loading="lazy" decoding="async"><figcaption>La caisse et le panier</figcaption></figure>
+            <figure><img src="img/projets/ticket-stats.webp" alt="Tableau de bord des ventes : chiffre d'affaires, commandes, ticket moyen et graphiques" width="767" height="479" loading="lazy" decoding="async"><figcaption>Le tableau de bord (données de démonstration)</figcaption></figure>
+          </div>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Comptes administrateur et caissier</strong>, chaque administrateur ayant sa propre boutique</li>
+            <li><strong>Événements</strong> séparés, chacun avec ses produits, ses stocks, ses ventes et son logo sur le ticket</li>
+            <li><strong>Caisse</strong> avec panier, monnaie à rendre, et un ticket pour tout ou un ticket par article</li>
+            <li><strong>Impression directe</strong> en ESC/POS, logo converti pour l'imprimante, suivi du statut de chaque ticket</li>
+            <li><strong>Tableau de bord</strong> : chiffre d'affaires, ticket moyen, ventes par heure et par produit, historique</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Interface <strong>Vue 3</strong> (Vuetify, Pinia, Chart.js) et API <strong>FastAPI</strong> avec SQLAlchemy, sur SQLite ou PostgreSQL. Mots de passe hachés (PBKDF2), sessions par jetons signés, données validées avec Pydantic et CORS restreint.</p>
+          <ul class="tags" aria-label="Technologies"><li>Vue.js 3</li><li>Vuetify</li><li>FastAPI</li><li>SQLAlchemy</li><li>ESC/POS</li><li>Chart.js</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/TicketTwirling" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="topaz-local" data-cat="personnel">
+          <p class="card__file">topaz-local</p>
+          <h2>Topaz Local : améliorer ses vidéos par IA, en local</h2>
+          <p class="meta">Sept. 2026 · Projet personnel</p>
+          <p>Un équivalent libre de Topaz Video AI : <strong>super-résolution</strong>, débruitage, netteté et <strong>interpolation d'images</strong> pour un mouvement fluide, calculés sur la carte graphique. L'interface web affiche la progression, le temps restant et un <strong>comparateur avant / après</strong>.</p>
+          <figure><img src="img/projets/topazlocal.webp" alt="Interface de Topaz Local : choix de la vidéo et réglages automatiques ou manuels" width="767" height="479" loading="lazy" decoding="async"><figcaption>Choix de la vidéo et réglages</figcaption></figure>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Mode automatique</strong> : modèle d'IA choisi selon la résolution d'origine, vidéo portée à <strong>au moins 60 i/s</strong>, sortie jusqu'en 4K</li>
+            <li><strong>Réglages manuels</strong> : modèle, résolution et fps cibles, netteté, bruit, encodeur et qualité</li>
+            <li><strong>Installation automatique</strong> des moteurs (ffmpeg, Real-ESRGAN, RIFE), sous Windows et Linux</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Une chaîne de traitement en Python : analyse avec ffprobe, extraction des images, <strong>Real-ESRGAN</strong> pour reconstruire les détails, <strong>RIFE</strong> pour créer les images intermédiaires (tous deux en Vulkan), puis ré-encodage avec NVENC ou libx264.</p>
+          <ul class="tags" aria-label="Technologies"><li>Python</li><li>Real-ESRGAN</li><li>RIFE</li><li>Vulkan</li><li>ffmpeg</li><li>NVENC</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/TopazLocal" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="gp-explorer" data-cat="universitaire">
+          <p class="card__file">gp-explorer</p>
+          <h2>GP Explorer : site de gestion d'un événement</h2>
+          <p class="meta">Sept. 2025 – mars 2026 · Projet de 2e année (SAÉ S3-S4) · équipe de 5</p>
+          <p>Le site complet d'un grand événement de course au circuit Bugatti du Mans : <strong>billetterie, boutique, carte du circuit, prestataires</strong>… Chaque utilisateur a <strong>son propre espace</strong> selon son rôle (visiteur, prestataire, administrateur). Projet mené en <strong>méthode agile</strong>, par itérations courtes, à partir d'un cahier des charges.</p>
+          <figure><img src="img/projets/gp-explorer.webp" alt="Page d'accueil du site GP Explorer : vidéo du circuit en fond, compte à rebours et billetterie" width="800" height="500" loading="lazy" decoding="async"><figcaption>La page d'accueil, avec la vidéo du circuit en fond</figcaption></figure>
+          <div class="gallery">
+            <figure><img src="img/projets/gp-explorer-tickets.webp" alt="Billetterie : pass festival et expériences (karting, simulateurs, concerts)" width="1200" height="750" loading="lazy" decoding="async"><figcaption>La billetterie</figcaption></figure>
+            <figure><img src="img/projets/gp-explorer-map.webp" alt="Carte interactive du circuit Bugatti avec parkings et camping" width="1200" height="750" loading="lazy" decoding="async"><figcaption>La carte interactive du circuit</figcaption></figure>
+            <figure><img src="img/projets/gp-explorer-teams.webp" alt="Page des écuries et de leurs pilotes" width="1200" height="750" loading="lazy" decoding="async"><figcaption>Les écuries et leurs pilotes</figcaption></figure>
+            <figure><img src="img/projets/gp-explorer-stats.webp" alt="Tableau de bord des statistiques de l'événement, extrait du rapport" width="1200" height="800" loading="lazy" decoding="async"><figcaption>Le tableau de bord des statistiques (rapport)</figcaption></figure>
+          </div>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Billetterie</strong> par expérience (pass festival, karting, simulateurs, concerts…), <strong>boutique</strong> et panier</li>
+            <li><strong>Carte interactive</strong> du circuit avec ses parkings et son camping (Leaflet)</li>
+            <li><strong>Espace administrateur</strong> : services, boutique, utilisateurs, messages, carte et contenu de l'accueil</li>
+            <li><strong>Espace prestataire</strong> : ses produits, son compte et ses statistiques de ventes</li>
+            <li><strong>Tableaux de bord</strong> (Chart.js) et <strong>QR codes</strong> générés et lus dans le navigateur</li>
+            <li>Connexion par identifiant ou <strong>compte Discord</strong>, site traduit en <strong>trois langues</strong> (FR, EN, ES)</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Une <strong>API Express de 74 routes</strong> documentée avec Swagger, <strong>16 modèles de données</strong> Sequelize sur PostgreSQL, et des droits vérifiés côté serveur (jetons JWT, rôles, propriété des données). Le site est une application Vue 3 avec Pinia et Vue Router.</p>
+          <h3>Le défi</h3>
+          <p>Avancer à cinq sur le même code pendant plusieurs mois : découper le travail en itérations courtes et se répartir les tâches pour ne pas se marcher dessus.</p>
+          <h3>Évolutions possibles</h3>
+          <p>Mettre le site en ligne avec une base hébergée, et ajouter des tests automatisés sur l'API.</p>
+          <ul class="tags" aria-label="Technologies"><li>Vue.js 3</li><li>Pinia</li><li>Vite</li><li>Node.js</li><li>Express</li><li>Sequelize</li><li>PostgreSQL</li><li>JWT</li><li>Swagger</li><li>Leaflet</li><li>Chart.js</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/GPExplorer" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="puissancex" data-cat="universitaire">
+          <p class="card__file">puissancex</p>
+          <h2>PuissanceX : un puissance 4 personnalisable</h2>
+          <p class="meta">Avril – juin 2025 · Projet de 1re année · équipe de 5 · chef d'équipe</p>
+          <p>Un puissance 4 où l'on choisit la <strong>taille de la grille</strong> (de 5 à 10 colonnes et lignes) et le <strong>nombre de pions à aligner</strong>, avec la possibilité d'affronter l'ordinateur. On joue au clavier, dans la console.</p>
+          <figure><img src="img/projets/puissancex.png" alt="Deux états d'une grille de PuissanceX analysés dans le rapport technique" width="600" height="400" loading="lazy" decoding="async"><figcaption>Extrait du rapport technique : l'IA choisit où jouer</figcaption></figure>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Grille et règle de victoire</strong> paramétrables avant chaque partie</li>
+            <li><strong>Deux intelligences artificielles</strong> : l'une suit des règles (gagner, bloquer, jouer au centre), l'autre note chaque coup possible</li>
+            <li><strong>Parties rejouables</strong> depuis des fichiers d'entrée, pour tester des scénarios précis</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Le jeu s'appuie sur <strong>boardifier</strong>, un framework MVC fourni par l'IUT. <strong>85 tests unitaires JUnit 5</strong> couvrent le modèle et l'affichage.</p>
+          <h3>Mon rôle</h3>
+          <p>Chef d'équipe : répartition des tâches, suivi de l'avancement et coordination des cinq membres.</p>
+          <h3>Le défi</h3>
+          <p>Savoir quelle IA est vraiment la meilleure. Un banc d'essai les fait s'affronter sur des <strong>tournois de 1 000 parties</strong> : l'IA intermédiaire bat l'IA à règles dans <strong>68 %</strong> des cas.</p>
+          <figure><img src="img/projets/puissancex-ia.webp" alt="Graphique du taux de victoire : IA intermédiaire 81,7 %, IA complexe 59,6 %, hasard 8,7 %" width="1200" height="795" loading="lazy" decoding="async"><figcaption>Taux de victoire de chaque stratégie, mesuré par le banc d'essai</figcaption></figure>
+          <ul class="tags" aria-label="Technologies"><li>Java</li><li>JUnit 5</li><li>MVC</li><li>IA de jeu</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/PuissanceX" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="unity-fps" data-cat="personnel">
+          <p class="card__file">unity-fps</p>
+          <h2>Unity FPS : jeu de survie contre des zombies</h2>
+          <p class="meta">2025 · Projet de jeu vidéo · en binôme</p>
+          <p>Un jeu de tir à la première personne : le joueur doit éliminer des <strong>vagues de zombies</strong> de plus en plus difficiles pour passer à la manche suivante.</p>
+          <figure><img src="img/projets/unity-fps.webp" alt="Capture du jeu : vue à la première personne, barre de vie, manche 1 sur 5 et zombies restants" width="915" height="509" loading="lazy" decoding="async"><figcaption>En jeu : manche, zombies restants, barre de vie et mini-carte</figcaption></figure>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Système de manches</strong> avec une difficulté progressive et un zombie boss</li>
+            <li><strong>Interface complète</strong> : menu, configuration de partie, paramètres, pause et écran de résultats</li>
+            <li><strong>Touches personnalisables</strong> grâce au nouveau système de contrôles d'Unity</li>
+            <li><strong>Mini-carte</strong>, viseur, barre de vie et compteur de zombies tués</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p><strong>20 scripts C#</strong> (environ 2 300 lignes) répartis sur 5 scènes : joueur et tir, gestionnaire de vagues, mini-carte, pause, menus et statistiques de partie.</p>
+          <h3>Le défi</h3>
+          <p>Faire monter la difficulté sans rendre le jeu injouable : le gestionnaire de vagues règle le nombre et le type de zombies à chaque manche.</p>
+          <ul class="tags" aria-label="Technologies"><li>C#</li><li>Unity</li><li>Input System</li><li>TextMesh Pro</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/Unity_FPS" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="pauvocodeur" data-cat="universitaire">
+          <p class="card__file">pauvocodeur</p>
+          <h2>Pauvocodeur : transformer des sons</h2>
+          <p class="meta">Déc. 2024 – janv. 2025 · Projet de 1re année (SAÉ 1.01-02) · en binôme</p>
+          <p>Un programme Java qui modifie des fichiers audio : <strong>changer la hauteur</strong> d'une voix sans changer sa durée, <strong>accélérer ou ralentir</strong> un son sans le déformer, ajouter de l'<strong>écho</strong>.</p>
+          <figure><img src="img/projets/pauvocodeur-ondes.webp" alt="Trois formes d'onde : le son original de 9,6 secondes, le son rééchantillonné de 6,4 secondes, puis le son traité par le vocodeur, revenu à 9,6 secondes" width="1200" height="526" loading="lazy" decoding="async"><figcaption>Formes d'onde des fichiers du dépôt, pour un facteur 1,5</figcaption></figure>
+          <h3>Fonctionnalités principales</h3>
+          <ul class="list">
+            <li><strong>Rééchantillonnage</strong> pour changer la hauteur du son</li>
+            <li><strong>Trois vocodeurs</strong> de plus en plus fins : simple, avec chevauchement, puis avec recherche de corrélation croisée</li>
+            <li><strong>Écho</strong> et affichage de la forme d'onde</li>
+          </ul>
+          <h3>Sous le capot</h3>
+          <p>Pour un facteur 1,5, le son est d'abord rééchantillonné : plus aigu, mais plus court (9,6 s → 6,4 s). Le vocodeur l'étire ensuite pour retrouver sa <strong>durée d'origine</strong>. Chaque étape produit son propre fichier .wav, pratique pour comparer.</p>
+          <h3>Le défi</h3>
+          <p>Éviter les « clics » quand on recolle des morceaux de son : on cherche le meilleur point de raccord grâce à la <strong>corrélation croisée</strong> entre deux morceaux.</p>
+          <ul class="tags" aria-label="Technologies"><li>Java</li><li>Traitement du signal</li></ul>
+          <p class="links"><a href="https://github.com/bdidier1/SAE1.01-02" target="_blank" rel="noopener noreferrer">Voir le code sur GitHub</a></p>
+        </section>
+
+        <section class="card" id="site-sfr" data-cat="universitaire">
+          <p class="card__file">site-sfr</p>
+          <h2>Site vitrine SFR</h2>
+          <p class="meta">2024 – 2025 · Projet de 1re année (SAÉ 1.05-06) · équipe de 4</p>
+          <p>Un site de présentation d'une entreprise : son histoire, ses actualités, sa situation économique et un support FAQ. Il est <strong>validé avec les outils du W3C</strong> et publié sur GitHub Pages, GitLab Pages et Bitbucket.</p>
+          <div class="gallery">
+            <figure><img src="img/projets/sfr.webp" alt="Page d'accueil du site SFR" width="1200" height="750" loading="lazy" decoding="async"><figcaption>La page d'accueil (réalisée par moi)</figcaption></figure>
+            <figure><img src="img/projets/sfr-faq.webp" alt="Page Support et FAQ du site SFR" width="1200" height="750" loading="lazy" decoding="async"><figcaption>La page Support et FAQ (réalisée par moi)</figcaption></figure>
+          </div>
+          <h3>Mon rôle</h3>
+          <p>La page d'accueil, la barre de navigation, le pied de page, la FAQ et la page 404, ainsi que le planning du projet (diagramme de Gantt).</p>
+          <ul class="tags" aria-label="Technologies"><li>HTML</li><li>CSS</li><li>W3C</li></ul>
+          <p class="links"><a href="https://bdidier3.github.io/SAE1_05-06/index.html" target="_blank" rel="noopener noreferrer">Voir le site en ligne</a> · <a href="https://github.com/bdidier1/SAE1_05-06" target="_blank" rel="noopener noreferrer">Code</a></p>
+        </section>
+
+        <section class="card" id="bamm" data-cat="universitaire">
+          <p class="card__file">bamm</p>
+          <h2>BAMM : boutique de vêtements</h2>
+          <p class="meta">2024 – 2025 · Projet web de 1re année · équipe de 4</p>
+          <p>Une boutique en ligne de vêtements, avec un catalogue, une page à propos, une carte et un panier qui calcule le total et la livraison.</p>
+          <div class="gallery">
+            <figure><img src="img/projets/bamm.webp" alt="Page d'accueil de la boutique BAMM" width="1200" height="750" loading="lazy" decoding="async"><figcaption>La page d'accueil (réalisée par moi)</figcaption></figure>
+            <figure><img src="img/projets/bamm-boutique.webp" alt="Page boutique de BAMM avec les produits" width="1200" height="750" loading="lazy" decoding="async"><figcaption>La boutique</figcaption></figure>
+            <figure><img src="img/projets/bamm-panier.webp" alt="Panier de BAMM avec le récapitulatif de commande" width="1200" height="750" loading="lazy" decoding="async"><figcaption>Le panier</figcaption></figure>
+          </div>
+          <h3>Mon rôle</h3>
+          <p>La page d'accueil, ainsi que l'en-tête et le pied de page communs à tout le site.</p>
+          <ul class="tags" aria-label="Technologies"><li>HTML</li><li>CSS</li><li>JavaScript</li></ul>
+          <p class="links"><a href="https://bdidier3.github.io/ProjetWeb_BAMM/index.html" target="_blank" rel="noopener noreferrer">Voir le site en ligne</a> · <a href="https://github.com/bdidier1/ProjetWeb_BAMM" target="_blank" rel="noopener noreferrer">Code</a></p>
+        </section>
+
+        </div>
+        <p class="gh-all">Tous mes projets sont sur <a href="https://github.com/bdidier1" target="_blank" rel="noopener noreferrer">github.com/bdidier1</a></p>
+      </article>
+
+      <!-- Compétences -->
+      <article id="p-competences" class="panel" role="tabpanel" data-title="Compétences" tabindex="-1">
+        <h1>Compétences</h1>
+        <p class="lead">Les langages, frameworks et outils que j'utilise, avec les projets où je les ai mis en pratique.</p>
+        <section class="skillset" style="--c:#3794ff">
+          <h2 class="skillset__title">Langages <span class="skillset__count">9</span></h2>
+          <ul class="skillgrid">
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/java/java-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Java</strong><small>PuissanceX · Pauvocodeur</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/python/python-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Python</strong><small>Stage EzDev · projets IUT</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/javascript/javascript-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>JavaScript</strong><small>GP Explorer</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/html5/html5-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>HTML</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/css3/css3-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>CSS</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/c/c-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>C</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/csharp/csharp-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>C#</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/kotlin/kotlin-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Kotlin</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/swift/swift-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Swift</strong></span></li>
+          </ul>
+        </section>
+        <section class="skillset" style="--c:#c586c0">
+          <h2 class="skillset__title">Frameworks <span class="skillset__count">5</span></h2>
+          <ul class="skillgrid">
+            <li class="skill"><span class="skill__logo skill__logo--txt" aria-hidden="true">FX</span><span class="skill__txt"><strong>JavaFX</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/flask/flask-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Flask</strong><small>Projets IUT</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/vuejs/vuejs-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Vue.js</strong><small>GP Explorer</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/nodejs/nodejs-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Node.js</strong><small>GP Explorer · Express</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/qt/qt-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Qt</strong></span></li>
+          </ul>
+        </section>
+        <section class="skillset" style="--c:#dcdcaa">
+          <h2 class="skillset__title">Bases de données <span class="skillset__count">3</span></h2>
+          <ul class="skillgrid">
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/mysql/mysql-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>MySQL</strong><small>Projets IUT</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/postgresql/postgresql-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>PostgreSQL</strong><small>GP Explorer</small></span></li>
+            <li class="skill"><span class="skill__logo skill__logo--txt" aria-hidden="true">MCD</span><span class="skill__txt"><strong>Merise</strong><small>MCD / MLD</small></span></li>
+          </ul>
+        </section>
+        <section class="skillset" style="--c:#3fb950">
+          <h2 class="skillset__title">Qualité et tests <span class="skillset__count">4</span></h2>
+          <ul class="skillgrid">
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/pytest/pytest-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>pytest</strong><small>Stage EzDev</small></span></li>
+            <li class="skill"><span class="skill__logo skill__logo--txt" aria-hidden="true">%</span><span class="skill__txt"><strong>coverage.py</strong><small>Stage EzDev</small></span></li>
+            <li class="skill"><span class="skill__logo skill__logo--txt" aria-hidden="true">CST</span><span class="skill__txt"><strong>LibCST</strong><small>Stage EzDev</small></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/gitlab/gitlab-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>CI/CD GitLab</strong><small>Stage EzDev</small></span></li>
+          </ul>
+        </section>
+        <section class="skillset" style="--c:#f2994a">
+          <h2 class="skillset__title">Outils <span class="skillset__count">12</span></h2>
+          <ul class="skillgrid">
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/git/git-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Git</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/github/github-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>GitHub</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/gitlab/gitlab-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>GitLab</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/bitbucket/bitbucket-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Bitbucket</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/intellij/intellij-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>IntelliJ IDEA</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/pycharm/pycharm-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>PyCharm</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/datagrip/datagrip-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>DataGrip</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/vscode/vscode-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>VS Code</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/unity/unity-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Unity</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/vim/vim-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Vim</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/linux/linux-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Linux</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/windows11/windows11-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Windows</strong></span></li>
+          </ul>
+        </section>
+        <section class="skillset" style="--c:#22d3ee">
+          <h2 class="skillset__title">Gestion de projet <span class="skillset__count">6</span></h2>
+          <ul class="skillgrid">
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/notion/notion-original.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Notion</strong></span></li>
+            <li class="skill"><span class="skill__logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/trello/trello-plain.svg" alt="" width="26" height="26" loading="lazy" decoding="async"></span><span class="skill__txt"><strong>Trello</strong></span></li>
+          </ul>
+          <ul class="pills"><li>Méthode agile</li><li>Analyse des besoins</li><li>Cahier des charges</li><li>Maintenance</li></ul>
+        </section>
+        <section class="skillset" style="--c:#ff7eb6">
+          <h2 class="skillset__title">Qualités personnelles</h2>
+          <ul class="pills pills--soft"><li>Travail en équipe</li><li>Organisation</li><li>Curiosité</li><li>Motivation</li><li>Coordination d'équipe</li></ul>
+        </section>
+      </article>
+
+      <!-- Parcours -->
+      <article id="p-parcours" class="panel" role="tabpanel" data-title="Parcours" tabindex="-1">
+        <h1>Parcours</h1>
+        <p class="lead">Du bac à mon prochain stage, voici les grandes étapes de mon parcours, de la plus récente à la plus ancienne.</p>
+        <ol class="timeline">
+          <li><span class="when">Janvier 2027</span><strong>Stage chez Actemium</strong><span>J'y automatiserai des tâches de l'entreprise avec Power Apps et travaillerai avec des agents conçus dans Copilot Studio.</span></li>
+          <li><span class="when">Avril – juin 2026</span><strong>Stage de développeur chez EzDEV</strong><span>À Montreux-Château, j'ai fait passer une application de gestion documentaire de Python 3.11 à Python 3.13, en automatisant ses tests.</span></li>
+          <li><span class="when">Juin – juillet 2025</span><strong>Job d'été chez Auchan</strong><span>À Bessoncourt, je m'occupais de la mise en rayon et du réapprovisionnement.</span></li>
+          <li><span class="when">2024 → 2027</span><strong>BUT Informatique à l'IUT Nord Franche-Comté</strong><span>À Belfort, dans le parcours Réalisation d'applications. J'ai validé ma 2<sup>e</sup> année et je suis aujourd'hui en 3<sup>e</sup> année.</span></li>
+          <li><span class="when">2024</span><strong>Baccalauréat STI2D</strong><span>Spécialité Systèmes d'information et numérique, où j'ai acquis mes premières bases en programmation.</span></li>
+        </ol>
+      </article>
+
+      <!-- Veille -->
+      <article id="p-veille" class="panel" role="tabpanel" data-title="Veille" tabindex="-1">
+        <h1>Veille informatique</h1>
+        <p class="lead">Quatre sources que je consulte régulièrement pour rester à jour.</p>
+        <ul class="list list--veille">
+          <li><strong>Stack Overflow</strong> : comprendre une erreur et retenir les bonnes pratiques</li>
+          <li><strong>GitHub</strong> : lire le code d'autres projets et suivre les outils que j'utilise</li>
+          <li><strong>Reddit</strong> : suivre l'actualité des langages et des frameworks</li>
+          <li><strong>Discord</strong> : échanger avec d'autres développeurs</li>
+        </ul>
+      </article>
+
+      <!-- Contact -->
+      <article id="p-contact" class="panel" role="tabpanel" data-title="Contact" tabindex="-1">
+        <h1>Contact</h1>
+        <p class="lead">Merci de votre visite. Une question ou une proposition ? <strong>Écrivez-moi</strong>, je vous réponds rapidement.</p>
+        <ul class="list list--links">
+          <li><strong>Email</strong> : <a href="mailto:baptiste.didier@proton.me">baptiste.didier@proton.me</a></li>
+          <li><strong>Téléphone</strong> : <a href="tel:+33602564363">06 02 56 43 63</a></li>
+          <li><strong>GitHub</strong> : <a href="https://github.com/bdidier1" target="_blank" rel="noopener noreferrer">github.com/bdidier1</a></li>
+          <li><strong>Où</strong> : Vézelois, Territoire de Belfort (90)</li>
+        </ul>
+        <form class="form" id="contact-form" action="https://formsubmit.co/baptiste.didier@proton.me" method="POST">
+          <input type="hidden" name="_subject" value="Nouveau message depuis le portfolio">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="true">
+          <input type="hidden" name="_next" id="form-next" value="">
+          <input type="text" name="_honey" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label for="nom">Nom</label>
+          <input id="nom" name="nom" type="text" autocomplete="name" placeholder="Votre nom" maxlength="100" required>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="vous@exemple.fr" maxlength="200" required>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="4" placeholder="Votre message" maxlength="4000" required></textarea>
+          <p class="muted">Vos données servent uniquement à vous répondre : elles ne sont ni stockées ni partagées.</p>
+          <button class="btn" type="submit">Envoyer</button>
+        </form>
+      </article>
+
+      <!-- CV -->
+      <article id="p-cv" class="panel" role="tabpanel" data-title="CV" tabindex="-1">
+        <h1>Mon CV</h1>
+        <p class="actions actions--cv">
+          <a class="btn" href="cv/DIDIER_Baptiste_CV.pdf" download="Baptiste_DIDIER_CV.pdf">Télécharger (PDF)</a>
+          <a class="btn btn--ghost" href="cv/DIDIER_Baptiste_CV.pdf" target="_blank" rel="noopener">Ouvrir le PDF</a>
+        </p>
+        <a class="cvsheet" href="cv/DIDIER_Baptiste_CV.pdf" target="_blank" rel="noopener" aria-label="Ouvrir le CV en PDF">
+          <img src="img/cv.webp" alt="CV de Baptiste Didier : formation, expériences, compétences et contact" width="1400" height="1980" loading="lazy" decoding="async">
+        </a>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Fiche détaillée d'un projet (3D et classique) -->
+  <dialog class="pmodal" id="pmodal" aria-label="Détail du projet">
+    <button type="button" class="pmodal__close" id="pmodal-close" aria-label="Fermer la fiche">✕</button>
+    <div class="pmodal__body" id="pmodal-body"></div>
+  </dialog>
+
+  <noscript><p class="noscript">Ce portfolio a besoin de JavaScript pour s'afficher. Mon CV reste disponible : <a href="cv/DIDIER_Baptiste_CV.pdf">cv/DIDIER_Baptiste_CV.pdf</a>.</p></noscript>
+
+  <div id="loader" class="loader"><p>Chargement<span class="dots"></span></p></div>
+</body>
+</html>
