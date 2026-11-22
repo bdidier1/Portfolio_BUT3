@@ -2,7 +2,7 @@
 // La vue classique est choisie d'office quand la connexion est lente, l'appareil modeste ou WebGL absent.
 (function () {
   'use strict';
-  var V = '?v=20261118a';
+  var V = '?v=20261122a';
   var html = document.documentElement;
   var asked = new URLSearchParams(location.search).get('vue');   // « classique », « 3d » ou rien
   var c = navigator.connection || {};
