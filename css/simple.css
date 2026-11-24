@@ -1,0 +1,19 @@
+/* Pages annexes (404, message envoyé) : même style que la vue classique du portfolio */
+:root { --bg: #05070b; --card: #0b0f16; --card2: #080b11; --label: #fff; --text: #d4d8df; --label2: #8b93a1; --tint: #3fb950; --tint-press: #56d364; --key: #9cdcfe; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; display: grid; place-items: center; padding: 20px; background: var(--bg); color: var(--label);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", system-ui, Roboto, Arial, sans-serif;
+  font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+}
+main { width: 100%; max-width: 520px; padding: 32px 28px 28px; background: var(--card); border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, .35); text-align: center; }
+.code { margin: 0 0 10px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; color: var(--tint); }
+.code span { color: var(--key); }
+h1 { margin: 0 0 8px; font-size: 28px; line-height: 1.2; letter-spacing: -.02em; }
+p { margin: 0 0 22px; color: var(--text); }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 20px; border-radius: 12px; background: var(--tint); color: #04130a; font-weight: 600; text-decoration: none; }
+.btn:hover { background: var(--tint-press); }
+.btn:focus-visible { outline: 3px solid rgba(63, 185, 80, .5); outline-offset: 3px; }
+.small { margin: 18px 0 0; font-size: 13px; color: var(--label2); }
+.small a { color: var(--tint); }

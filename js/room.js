@@ -95,7 +95,7 @@
     { lvl: 'NIVEAU 1', date: '2024', title: 'Bac STI2D', place: 'Spécialité Systèmes d\'Information et Numérique', text: 'J\'y ai acquis mes premières bases en programmation et en systèmes numériques.' },
     { lvl: 'NIVEAU 2', date: '2024 → 2027', title: 'BUT Informatique', place: 'IUT Nord Franche-Comté, Belfort', text: 'Parcours Réalisation d\'applications : j\'apprends à concevoir, développer et tester des applications.' },
     { lvl: 'NIVEAU 3', date: 'Juin – juil. 2025', title: 'Job d\'été', place: 'Auchan, Bessoncourt', text: 'Je m\'occupais de la mise en rayon et du réapprovisionnement.' },
-    { lvl: 'NIVEAU 4', date: 'Avril – juin 2026', title: 'Stage développeur', place: 'EzDev, Montreux-Château', text: 'J\'ai fait passer une application de Python 3.11 à 3.13 et automatisé ses tests.' },
+    { lvl: 'NIVEAU 4', date: 'Avril – juin 2026', title: 'Stage développeur', place: 'EzDEV, Montreux-Château', text: 'J\'ai fait passer une application de Python 3.11 à 3.13 et automatisé ses tests.' },
     { lvl: 'PROCHAIN NIVEAU', date: 'Janvier 2027', title: 'Actemium', place: 'Stage de 3e année · automatisation', text: 'J\'y automatiserai des tâches avec Power Apps et des agents Copilot Studio.', final: true },
   ];
 
@@ -117,7 +117,7 @@
     ctx.fillStyle = '#0b1018'; ctx.fillRect(0, 0, w, h);
     ctx.fillStyle = '#161d29'; ctx.fillRect(0, 0, w, 26);
     ['#ff5f56', '#ffbd2e', '#27c93f'].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(16 + i * 18, 13, 5, 0, 7); ctx.fill(); });
-    ctx.fillStyle = '#8b93a1'; ctx.font = '12px ' + FONT; ctx.fillText('projets/  ·  clique pour ouvrir', 90, 17);
+    ctx.fillStyle = '#8b93a1'; ctx.font = '12px ' + FONT; ctx.fillText('projets/  ·  cliquez pour ouvrir', 90, 17);
     ctx.font = '15px ' + FONT;
     let left = chars;
     for (let i = 0; i < CODE.length; i++) {
@@ -432,7 +432,7 @@
         wb(g, 0.55, 0.65, 0.06, 0x10161f, 0, 0.33, 0.62);
         wb(g, 3.0, 0.1, 1.7, 0x1b2230, 0, 1.95, -0.2);
         wb(g, 1.9, 0.55, 0.1, 0x10161f, 0, 2.35, 0.45);
-        sign(g, 1.7, 0.45, 0, 2.35, 0.51, 'EzDev', null, '#10161f', '#3fb950');
+        sign(g, 1.7, 0.45, 0, 2.35, 0.51, 'EzDEV', null, '#10161f', '#3fb950');
         wb(g, 0.9, 0.28, 0.45, 0x3b82f6, -1.9, 0.2, 1.3); wb(g, 0.5, 0.22, 0.4, 0x9fd3ff, -1.9, 0.45, 1.3);
         tree(g, 2.2, 1.0, 1);
       },
@@ -565,7 +565,7 @@
         uv.setXY(0, u0, v1); uv.setXY(1, u1, v1); uv.setXY(2, u0, v0); uv.setXY(3, u1, v0);
         return new T.Mesh(g, amat);
       }
-      const T_W = 0.14, GAP = 0.024, ROW = 0.158, PER = 6;
+      const T_W = 0.125, GAP = 0.02, ROW = 0.15, PER = 7;   // 7 compétences par étagère
       let y = 2.13, cell = 0;
       list.forEach((cat, ci) => {
         const col = cat.color || '#3fb950';

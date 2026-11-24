@@ -46,7 +46,10 @@
   // ---------- Fiches projets : communes à la chambre 3D et à la vue classique ----------
   const CATS = [['tous', 'Tous'], ['stage', 'Stages'], ['universitaire', 'Universitaires'], ['personnel', 'Personnels'], ['automatisation', 'Automatisation']];
   const CAT_LABEL = { stage: 'Stage', universitaire: 'Projet universitaire', personnel: 'Projet personnel', automatisation: 'Automatisation' };
-  const cards = [...document.querySelectorAll('#p-projets .card')];
+  // Les fiches complètes sont dans un <template> : hors du rendu tant qu'on ne les ouvre pas
+  const tpl = $('#project-cards');
+  const cards = tpl ? [...tpl.content.querySelectorAll('.card')] : [...document.querySelectorAll('#p-projets .card')];
+  const isMain = (card) => card.dataset.rank !== 'autre';
   const catsOf = (card) => (card.dataset.cat || '').split(' ').filter(Boolean);
   const inCat = (card, k) => k === 'tous' || catsOf(card).includes(k);
   const dlg = $('#pmodal'), dlgBody = $('#pmodal-body');
@@ -71,6 +74,21 @@
   function onClosed() {
     html.classList.remove('modal-open');
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  }
+  // Une rubrique entière au premier plan (notes de veille dans la chambre 3D)
+  function openPanel(k) {
+    const p = panels[k]; if (!p) return;
+    lastFocus = document.activeElement;
+    dlgBody.textContent = '';
+    const c = document.createElement('div'); c.className = 'card card--panel';
+    [...p.children].forEach((ch) => c.append(ch.cloneNode(true)));
+    c.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+    const h = c.querySelector('h1'); if (h) { const h2 = document.createElement('h2'); h2.textContent = h.textContent; h.replaceWith(h2); }
+    dlgBody.append(c);
+    html.classList.add('modal-open');
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    dlgBody.scrollTop = 0;
+    $('#pmodal-close').focus({ preventScroll: true });
   }
   dlg.addEventListener('close', onClosed);
   $('#pmodal-close').addEventListener('click', closeProject);
@@ -106,7 +124,13 @@
     const media = document.createElement('span'); media.className = 'ptile__media';
     // Vignette légère (img/projets/mini/) : l'image complète n'est chargée qu'à l'ouverture de la fiche
     const mini = (src) => src.replace(/^img\/projets\/([^/]+)\.\w+$/, 'img/projets/mini/$1.webp');
-    if (img) { const i = document.createElement('img'); i.src = mini(img.getAttribute('src')); i.alt = ''; i.loading = 'lazy'; i.decoding = 'async'; media.append(i); }
+    if (img) {
+      // Deux tailles de vignette : 320 px (écran standard) et 560 px (écran haute densité)
+      const i = document.createElement('img'), src = mini(img.getAttribute('src'));
+      i.src = src; i.srcset = src.replace(/\.webp$/, '-s.webp') + ' 320w, ' + src + ' 560w';
+      i.sizes = '(max-width: 600px) calc(100vw - 56px), 300px';
+      i.width = 560; i.height = 350; i.alt = ''; i.loading = 'lazy'; i.decoding = 'async'; media.append(i);
+    }
     else if (logo) { const i = document.createElement('img'); i.src = logo.getAttribute('src'); i.alt = ''; i.className = 'ptile__logo' + (logo.matches('.card__logo--dark') ? ' card__logo--dark' : ''); media.append(i); media.classList.add('ptile__media--logo'); }
     else { media.classList.add('ptile__media--code'); media.textContent = '</>'; }
     t.append(media);
@@ -124,10 +148,33 @@
     t.addEventListener('click', () => openProject(card));
     return t;
   }
+  // Ligne compacte pour les autres projets : titre, contexte et ouverture de la fiche
+  function projectRow(card) {
+    const li = document.createElement('li');
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'prow';
+    const h = document.createElement('strong'); h.textContent = card.querySelector('h2').textContent.trim();
+    const m = document.createElement('span'); m.className = 'prow__meta'; m.textContent = card.querySelector('.meta').textContent;
+    const go = document.createElement('span'); go.className = 'prow__go'; go.setAttribute('aria-hidden', 'true'); go.textContent = '→';
+    b.append(h, m, go);
+    b.addEventListener('click', () => openProject(card));
+    li.append(b);
+    return li;
+  }
+  // Les projets principaux en cadres, puis les autres en liste plus discrète
   function projectGrid(cat) {
+    const wrap = document.createElement('div'); wrap.className = 'pgroup';
+    const list = cards.filter((c) => inCat(c, cat));
     const grid = document.createElement('div'); grid.className = 'ptiles';
-    cards.filter((c) => inCat(c, cat)).forEach((c) => grid.append(projectTile(c)));
-    return grid;
+    list.filter(isMain).forEach((c) => grid.append(projectTile(c)));
+    if (grid.childElementCount) wrap.append(grid);
+    const others = list.filter((c) => !isMain(c));
+    if (others.length) {
+      const h = document.createElement('h2'); h.className = 'pothers__title'; h.textContent = 'Autres projets';
+      const ul = document.createElement('ul'); ul.className = 'pothers';
+      others.forEach((c) => ul.append(projectRow(c)));
+      wrap.append(h, ul);
+    }
+    return wrap;
   }
 
   // ---------- Bouton en haut à droite : passer de la 3D à la vue classique et inversement ----------
@@ -138,7 +185,7 @@
     const to3d = BOOT.mode === 'classic';
     sw.href = (to3d ? '?vue=3d' : '?vue=classique') + k;
     sw.innerHTML = svg(to3d ? ICONS.cube : ICONS.list) + '<span>' + (to3d ? 'Vue 3D' : 'Vue classique') + '</span>';
-    sw.setAttribute('aria-label', to3d ? 'Passer à la chambre en 3D' : 'Passer à la vue classique');
+    sw.setAttribute('aria-label', to3d ? 'Vue 3D : passer à la chambre en 3D' : 'Vue classique : passer à la page sans 3D');
   }
   if (sw && BOOT.mode === 'classic' && !BOOT.gl) sw.remove(); else updateSwitch(null);
 
@@ -174,7 +221,6 @@
 
     // Projets : catégories + cadres ; la fiche complète s'ouvre au premier plan
     const proj = panels.projets;
-    $('#projects').hidden = true;
     let grid = projectGrid('tous');
     const filters = buildFilters('tous', (cat) => { const g = projectGrid(cat); grid.replaceWith(g); grid = g; });
     proj.querySelector('.lead').after(filters, grid);
@@ -454,14 +500,16 @@
       + '<button type="button" class="btn" data-l="next"' + (lvl === lvlTotal ? ' disabled' : '') + '>' + (lvl === 0 ? 'Commencer ▶' : 'Suivant ▶') + '</button>'
       + (lvl ? '<button type="button" class="btn btn--ghost" data-l="ov">Vue d\'ensemble</button>' : ''));
   }
-  const VEILLE_TIP = '<span>Clique sur un livre pour l\'ouvrir. <span class="muted">Fais glisser pour regarder autour.</span></span>';
+  const VEILLE_TIP = '<span>Cliquez sur un livre pour l\'ouvrir. <span class="muted">Faites glisser pour regarder autour.</span></span>'
+    + '<button type="button" class="btn" data-notes="1">Lire mes notes de veille</button>';
   function onLevel(n, total, item) { lvl = n; lvlTotal = total; lvlItem = item; if (current === 'parcours') levelDock(); }
   function onBook(id, name) {
     if (current !== 'veille') return;
-    dockHtml(id ? '<span>Tu lis : <strong>' + name + '</strong>. <span class="muted">Clique pour le reposer.</span></span>' : VEILLE_TIP);
+    dockHtml(id ? '<span>Vous lisez : <strong>' + name + '</strong>. <span class="muted">Cliquez pour le reposer.</span></span>' : VEILLE_TIP);
   }
   dock.addEventListener('click', (e) => {
     const b = e.target.closest('button');
+    if (b && b.dataset.notes) { openPanel('veille'); return; }
     if (!b || !b.dataset.l) return;
     if (b.dataset.l === 'prev') room.setLevel(lvl - 1);
     if (b.dataset.l === 'next') room.setLevel(lvl + 1);
@@ -480,7 +528,7 @@
   let vitrine = false;
   function buildVitrine() {
   if (vitrine) return; vitrine = true;
-  room.setSkills([...document.querySelectorAll('#p-competences .skillset')].map((sec) => ({
+  room.setSkills([...document.querySelectorAll('#p-competences .skillset:not(.skillset--flat)')].map((sec) => ({
     name: sec.querySelector('.skillset__title').firstChild.textContent.trim(),
     color: sec.style.getPropertyValue('--c').trim(),
     items: [...sec.querySelectorAll('.skill, .pills li')].map((el) => {
@@ -505,7 +553,7 @@
     setUrl();
     page.textContent = '';
     const h = document.createElement('h1'); h.textContent = 'Mes projets';
-    const p = document.createElement('p'); p.className = 'lead'; p.textContent = 'Mes stages, mon application publiée et mes projets les plus aboutis. Choisis une catégorie, puis clique sur un projet pour l\'ouvrir.';
+    const p = document.createElement('p'); p.className = 'lead'; p.textContent = 'Mon stage, mon application publiée et mes projets les plus aboutis. Choisissez une catégorie, puis cliquez sur un projet pour l\'ouvrir.';
     let grid = projectGrid(bCat);
     const filters = buildFilters(bCat, (cat) => { bCat = cat; setUrl(); const g = projectGrid(cat); grid.replaceWith(g); grid = g; });
     const gh = document.createElement('p'); gh.className = 'bgit';
@@ -584,7 +632,7 @@
     room.exit(() => {
       if (current) return;
       hint.classList.remove('is-hidden');
-      say('Explore ma chambre : chaque objet cache une rubrique.', 6500);
+      say('Explorez ma chambre : chaque objet cache une rubrique.', 6500);
     });
   }
 
@@ -701,5 +749,5 @@
   loader.classList.add('is-done'); setTimeout(() => loader.remove(), 600);
   const fromHash = location.hash.slice(1);
   if (KEYS.includes(fromHash)) activate(fromHash);
-  else room.intro(() => say('Salut, moi c\'est Baptiste ! Clique sur moi pour faire connaissance.'));
+  else room.intro(() => say('Bonjour, je suis Baptiste ! Cliquez sur moi pour faire connaissance.'));
 })();

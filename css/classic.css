@@ -85,15 +85,17 @@ html.classic, .classic body { height: auto; }
 .classic .modeswitch span { position: static; width: auto; height: auto; clip: auto; overflow: visible; }
 
 /* ---------- Contenu ---------- */
+/* Message « version légère » : flottant en bas de l'écran, il ne décale pas la page */
 .classic .classic-note:not([hidden]) {
-  display: block; max-width: 860px; margin: calc(72px + var(--safe-t)) auto 0; padding: 12px 16px; margin-left: max(296px, calc(280px + (100vw - 280px - 860px) / 2));
-  background: var(--card); border-radius: 12px; color: var(--label2); font-size: 14px; box-shadow: var(--shadow);
+  display: block; position: fixed; z-index: 40; left: 50%; bottom: 16px; transform: translateX(-50%); width: max-content; max-width: min(560px, calc(100vw - 32px));
+  margin: 0; padding: 12px 16px; background: var(--card); border: 1px solid var(--sep); border-radius: 12px; color: var(--label2); font-size: 14px; box-shadow: var(--shadow);
+  animation: note-out .4s ease 9s forwards;
 }
+@keyframes note-out { to { opacity: 0; visibility: hidden; } }
 .classic .window {
   position: static; display: block; width: auto; height: auto; max-width: none; margin: 0 0 0 280px; padding: calc(72px + var(--safe-t)) 32px 64px;
   background: transparent; border: 0; border-radius: 0; box-shadow: none; animation: none;
 }
-.classic .classic-note:not([hidden]) ~ .window { padding-top: 24px; }
 .classic .window__body { max-width: 860px; margin: 0 auto; padding: 0; overflow: visible; }
 .classic .panel {
   position: relative; margin: 0 0 24px; padding: 28px 28px 24px; scroll-margin-top: 24px;
@@ -301,8 +303,7 @@ html.classic, .classic body { height: auto; }
   .classic .modeswitch { width: 40px; min-height: 40px; padding: 0; justify-content: center; border-radius: 10px; box-shadow: none; background: var(--fill); border: 0; }
   .classic .modeswitch span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .classic .window { margin: 0; padding: 16px 12px 48px; }
-  .classic .classic-note:not([hidden]) { margin: 12px 12px 0; }
-  .classic .classic-note:not([hidden]) ~ .window { padding-top: 12px; }
+  .classic .classic-note:not([hidden]) { bottom: 12px; }
   .classic .panel { padding: 22px 18px 18px; border-radius: 18px; scroll-margin-top: 72px; }
   .classic .panel > h1 { font-size: 28px; }
 }
@@ -429,3 +430,37 @@ html.classic, .classic body { height: auto; }
   .classic .classic-burger { background: var(--fill); }
   .classic .modeswitch { background: var(--fill); }
 }
+
+/* ---------- Autres projets : liste compacte sous les cadres ---------- */
+.classic .pothers__title { margin: 28px 0 10px; font-size: 20px; font-weight: 700; }
+.classic .pothers { list-style: none; margin: 0; padding: 0 16px; background: var(--card2); border-radius: 14px; }
+.classic .pothers li { border-bottom: 1px solid var(--sep); }
+.classic .pothers li:last-child { border-bottom: 0; }
+.classic .prow {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; width: 100%; padding: 12px 0; text-align: left; cursor: pointer;
+  font-family: var(--ios-font); color: var(--label); background: none; border: 0;
+}
+.classic .prow strong { font-size: 16px; font-weight: 600; }
+.classic .prow__meta { grid-column: 1; font-family: var(--ios-mono); font-size: 12px; color: var(--label2); letter-spacing: 0; }
+.classic .prow__go { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--tint); font-size: 18px; }
+.classic .prow:hover strong { color: var(--tint); }
+
+/* ---------- Veille : sources, sujets et notes ---------- */
+.classic #p-veille > h2 { margin: 26px 0 10px; font-size: 20px; font-weight: 700; }
+.classic .pills--veille li { font-size: 14px; }
+.classic .vnote { margin: 0 0 14px; padding: 20px 20px 6px; background: var(--card2); border-radius: 14px; border-left: 3px solid var(--tint); }
+.classic .vnote__date { margin: 0 0 4px; font-family: var(--ios-mono); font-size: 12px; color: var(--tint); letter-spacing: 0; }
+.classic .vnote h3 { margin: 0 0 10px; font-size: 18px; line-height: 1.3; font-weight: 700; }
+.classic .vnote p { margin: 0 0 12px; font-size: 15px; color: var(--text); }
+.classic .vnote code { font-family: var(--ios-mono); font-size: .88em; color: var(--key); }
+.classic .vnote__src { font-size: 13px !important; color: var(--label2) !important; }
+
+/* ---------- Compétences : qualités prouvées, langues ---------- */
+.classic .list--proofs { margin: 14px 0 0; font-size: 15px; color: var(--text); }
+.classic .skillset--flat .skillset__title { margin-bottom: 4px; }
+
+/* Éléments de la chambre 3D : masqués dès le premier affichage (le script les retire ensuite),
+   pour que la page ne bouge pas quand la vue classique se met en place */
+.classic #scene, .classic #sky, .classic #precip, .classic #pins, .classic #bubble, .classic #hint, .classic #thought,
+.classic #modebar, .classic #secnav, .classic #sectitle, .classic #dock, .classic #browser, .classic #nav-toggle,
+.classic #drawer, .classic #drawer-backdrop, .classic #title, .classic .window__bar { display: none !important; }

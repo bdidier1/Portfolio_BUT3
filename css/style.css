@@ -759,3 +759,24 @@ body { -webkit-user-select: none; user-select: none; }
 .thought .infos dt { color: #5b6474; }
 .thought .infos dd { color: #1f2633; }
 @media (max-width: 480px) { .infos > div { grid-template-columns: 1fr; gap: 0; } }
+
+/* ---------- Autres projets (navigateur du PC et fiches) ---------- */
+.pothers__title { margin: 1.2em 0 .5em; color: #fff; font-size: 1em; }
+.pothers { list-style: none; margin: 0 0 1em; padding: 0; border: 1px solid #222c3a; border-radius: .6em; overflow: hidden; }
+.pothers li + li { border-top: 1px solid #222c3a; }
+.prow { display: grid; grid-template-columns: 1fr auto; gap: .1em .8em; width: 100%; padding: .6em .9em; font: inherit; text-align: left; color: var(--text); background: #10161f; border: 0; cursor: pointer; }
+.prow:hover, .prow:focus-visible { background: #131b27; }
+.prow strong { color: #fff; font-size: .9em; }
+.prow__meta { grid-column: 1; color: var(--muted); font-size: .72em; }
+.prow__go { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--blue); }
+
+/* ---------- Notes de veille (fenêtre au premier plan dans la 3D) ---------- */
+.vnote { margin: 0 0 14px; padding: 14px 16px 4px; background: #0b1018; border: 1px solid #222c3a; border-left: 3px solid var(--green); border-radius: 8px; }
+.vnote__date { margin: 0 0 4px; color: var(--green); font-size: .78rem; }
+.vnote h3 { margin: 0 0 8px !important; color: #fff !important; font-size: 1rem !important; letter-spacing: 0 !important; text-transform: none !important; }
+.vnote__src { color: var(--muted); font-size: .8rem; }
+.card--panel > h2 { margin-top: 0; }
+.list--proofs { margin-top: 12px; }
+.dock [data-notes] { margin-left: 8px; }
+.card--panel h2 { margin-top: 18px; }
+.card--panel > h2:first-child { margin-top: 0; }
