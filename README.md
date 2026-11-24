@@ -23,7 +23,7 @@ Site statique codé à la main : HTML, CSS et JavaScript, hébergé sur GitHub P
 - **Chambre 3D** (Three.js, fichiers dans `js/vendor/`, sans CDN) : chaque objet ouvre une rubrique.
 - **Vue classique** (`?vue=classique`) : le même contenu sur une page simple, au style iOS (police système d'Apple, thème clair ou sombre automatique).
 
-`js/boot.js` choisit la vue au démarrage : la vue classique est **toujours utilisée sur téléphone** (plus simple à lire), et s'affiche d'office si la connexion est lente (mode économie de données, 2G), si l'appareil est très modeste, si WebGL est absent ou calculé sans carte graphique ; la 3D (≈ 1 Mo) n'est alors pas téléchargée. Les projets se filtrent par catégorie (stages, universitaires, personnels, automatisation) et s'ouvrent dans une fiche au premier plan. Une politique de sécurité du contenu (CSP) limite les scripts au site lui-même. Le formulaire de contact passe par FormSubmit.
+`js/boot.js` choisit la vue au démarrage : la vue classique est **toujours utilisée sur téléphone** (plus simple à lire), et s'affiche d'office si la connexion est lente (mode économie de données, 2G), si l'appareil est très modeste, si WebGL est absent ou calculé sans carte graphique ; la 3D (≈ 1 Mo) n'est alors pas téléchargée. Les projets se filtrent par catégorie (stages, universitaires, personnels, automatisation) et s'ouvrent dans une fiche au premier plan. La vue classique s'affiche dès la lecture du HTML, sans écran de chargement : le CSS et le script de démarrage sont intégrés à la page. Une politique de sécurité du contenu (CSP) limite les scripts au site lui-même et au script de démarrage, identifié par son empreinte SHA-256. Le formulaire de contact passe par FormSubmit.
 
 ## Construire le site (minification)
 
@@ -31,8 +31,9 @@ Le site sert des fichiers minifiés, construits à partir des sources lisibles :
 
 | Sources (à modifier) | Fichier servi (généré) |
 |---|---|
-| `css/style.css` + `css/classic.css` | `css/site.min.css` |
-| `js/boot.js`, `js/main.js`, `js/room.js`, `js/weather.js` | `js/*.min.js` |
+| `css/style.css` + `css/classic.css` | `css/site.min.css`, intégré directement dans `index.html` |
+| `js/boot.js` | `js/boot.min.js`, intégré dans `index.html` (autorisé par son empreinte dans la CSP) |
+| `js/main.js`, `js/room.js`, `js/weather.js` | `js/*.min.js` |
 
 Après chaque modification d'un fichier CSS ou JS :
 
@@ -71,7 +72,7 @@ merci.html        page affichée après l'envoi du formulaire
 favicon.svg       logo « B » (+ img/apple-touch-icon.png, img/icon-192.png)
 css/style.css     styles de la chambre 3D et éléments communs (source)
 css/classic.css   styles de la vue classique (source)
-css/site.min.css  les deux feuilles réunies et minifiées (généré)
+css/site.min.css  les deux feuilles réunies et minifiées, intégrées dans index.html (généré)
 css/simple.css    pages 404 et « message envoyé »
 js/boot.js        choix de la vue et chargement de la 3D à la demande
 js/main.js        interface : rubriques, fiches projets, catégories, menus

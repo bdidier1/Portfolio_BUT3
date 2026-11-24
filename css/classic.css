@@ -84,6 +84,15 @@ html.classic, .classic body { height: auto; }
 .classic .modeswitch svg { width: 17px; height: 17px; }
 .classic .modeswitch span { position: static; width: auto; height: auto; clip: auto; overflow: visible; }
 
+/* Affichage immédiat : la vue classique est visible dès le HTML, avant que le JavaScript ne s'exécute */
+.classic .loader, .classic #scene, .classic #sky, .classic #precip, .classic #pins, .classic #bubble, .classic #hint,
+.classic #thought, .classic #modebar, .classic #secnav, .classic #sectitle, .classic #dock, .classic #browser,
+.classic #nav-toggle, .classic #drawer, .classic #drawer-backdrop, .classic #title, .classic .window__bar { display: none !important; }
+.classic .window[hidden] { display: block; }
+.classic .modeswitch:not([data-ready]) { visibility: hidden; }
+/* Les rubriques hors de l'écran ne sont calculées qu'à l'approche : chargement plus rapide sur téléphone */
+.classic .panel:not(#p-apropos) { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
+
 /* ---------- Contenu ---------- */
 /* Message « version légère » : flottant en bas de l'écran, il ne décale pas la page */
 .classic .classic-note:not([hidden]) {

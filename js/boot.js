@@ -44,7 +44,7 @@
     document.head.appendChild(f);
     files = ['js/vendor/three.min.js', 'js/vendor/OrbitControls.js', 'js/weather.min.js' + V, 'js/room.min.js' + V].concat(files);
   }
-  (function next(i) {
+  function next(i) {
     if (i >= files.length) return;
     var s = document.createElement('script');
     s.src = files[i];
@@ -53,6 +53,10 @@
       // Un fichier de la 3D n'a pas pu se charger (réseau coupé…) : on bascule sur la vue classique
       if (mode === '3d') location.replace('?vue=classique' + location.hash);
     };
-    document.body.appendChild(s);
-  })(0);
+    document.head.appendChild(s);
+  }
+  // Ce script est lu dans <head> pour que la vue classique s'affiche dès le premier rendu, sans écran
+  // de chargement ; les scripts suivants ont besoin de toute la page, ils attendent donc la fin du HTML.
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { next(0); });
+  else next(0);
 })();

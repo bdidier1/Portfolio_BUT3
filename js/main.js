@@ -203,7 +203,8 @@
   if (!room) { classicMode(); return; }
 
   function classicMode() {
-    html.classList.remove('mode-3d'); html.classList.add('classic');
+    // Classes changées seulement si besoin : chaque modification de <html> recalcule les styles de toute la page
+    if (!html.classList.contains('classic')) { html.classList.remove('mode-3d'); html.classList.add('classic'); }
     BOOT.mode = 'classic'; updateSwitch(null);
     ['#scene', '#sky', '#precip', '#pins', '#bubble', '#hint', '#thought', '#modebar', '#secnav', '#sectitle', '#dock', '#browser', '#nav-toggle', '#drawer', '#drawer-backdrop', '#title']
       .forEach((s) => { const el = $(s); if (el) el.remove(); });
@@ -227,6 +228,7 @@
 
     // Icônes du menu, façon réglages iOS
     document.querySelectorAll('.classic-nav a').forEach((a) => {
+      if (a.querySelector('.ico')) return;
       const ico = document.createElement('span'); ico.className = 'ico ico--' + a.dataset.k; ico.innerHTML = svg(ICONS[a.dataset.k]);
       a.prepend(ico);
     });
@@ -262,6 +264,7 @@
     const h = location.hash.slice(1);
     if (KEYS.includes(h)) requestAnimationFrame(() => go(h));
     $('#loader').remove();
+    if (sw) sw.dataset.ready = '1';
   }
 
   // ---------- Chambre 3D ----------

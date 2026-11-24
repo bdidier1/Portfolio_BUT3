@@ -299,7 +299,6 @@ img { max-width: 100%; height: auto; }
 
 /* ===== Pages simples (404, merci) ===== */
 .simple { display: grid; place-items: center; min-height: calc(100vh - 24px); padding: 20px; }
-body:has(.simple) { overflow: auto; }
 .simple__box { max-width: 560px; border: 1px solid var(--border); background: var(--panel); border-radius: 10px; overflow: hidden; }
 .simple__box .project__file { margin: 0; padding: 8px 16px; background: var(--bar); border-bottom: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; }
 .simple__box div { padding: 18px 22px 22px; }
