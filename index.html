@@ -21,9 +21,9 @@
   <link rel="icon" href="img/icon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <!-- Fichiers construits par « npm run build » (sources : css/style.css, css/classic.css, js/*.js) -->
-  <link rel="stylesheet" href="css/site.min.css?v=32cb624f">
-  <link rel="preload" href="js/main.min.js?v=32cb624f" as="script">
-  <script src="js/boot.min.js?v=32cb624f" defer></script>
+  <link rel="stylesheet" href="css/site.min.css?v=aac13046">
+  <link rel="preload" href="js/main.min.js?v=aac13046" as="script">
+  <script src="js/boot.min.js?v=aac13046" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#fenetre">Aller au contenu</a>
@@ -137,7 +137,7 @@
   <p class="hint" id="hint">Faites glisser pour tourner · molette pour zoomer · cliquez sur les objets</p>
 
   <!-- Fenêtre avec onglets (3D) / contenu de la page (classique) -->
-  <section id="fenetre" class="window" aria-label="Contenu du portfolio" hidden>
+  <main id="fenetre" class="window" aria-label="Contenu du portfolio" hidden>
     <div class="window__bar">
       <div class="tabs" role="tablist" aria-label="Onglets ouverts" id="tabs"></div>
       <button type="button" class="window__close" id="close" aria-label="Fermer et revenir à la chambre">✕</button>
@@ -158,12 +158,9 @@
               <p class="subtitle">Étudiant en 3<sup>e</sup> année de BUT Informatique<br>Stage chez Actemium à partir de janvier 2027</p>
             </div>
           </div>
-          <p><strong>Une idée ne m'intéresse vraiment que le jour où quelqu'un s'en sert.</strong> Étudiant en 3<sup>e</sup> année de BUT Informatique à l'IUT Nord Franche-Comté, dans le parcours Réalisation d'applications, j'aime aller jusqu'au bout : coder, tester, puis mettre l'outil entre de vraies mains.</p>
-          <p>Mon meilleur exemple est <strong>ParkTracker</strong>, une application mobile que j'ai conçue seul et publiée sur l'App Store et Google Play. Elle m'a tout appris d'un coup : la base de données, la géolocalisation, les paiements, et la prudence qu'il faut avant d'envoyer une mise à jour à des utilisateurs qui comptent dessus.</p>
-          <p>Mes autres projets partent d'un même réflexe : <strong>quand une tâche se répète, je l'automatise</strong>. Un éditeur vidéo qui tourne en local, un outil qui publie mes vidéos sur YouTube, la caisse du club de twirling de Belfort… Chacun répond à un besoin réel, souvent le mien.</p>
-          <p>En stage chez <strong>EzDEV</strong>, j'ai appris l'exercice inverse : modifier un logiciel que je n'avais pas écrit et que des clients utilisent. Avant de toucher une ligne, je mesurais ce que les tests couvraient. J'ai gardé cette habitude.</p>
-          <p>La suite : un <strong>stage chez Actemium</strong> à partir de janvier 2027, sur l'automatisation avec Power Apps et Copilot Studio. Ensuite, j'aimerais <strong>poursuivre mes études en cybersécurité ou en intelligence artificielle</strong>, avec l'envie de créer un jour ma propre entreprise. Je reste ouvert à une proposition d'emploi.</p>
-          <p>Hors écran, 14 ans de football en club m'ont appris à jouer collectif et à garder mon calme quand le match tourne mal. Et si ParkTracker mesure les forces G dans les loopings, ce n'est pas un hasard : je passe une bonne partie de mon temps libre dans les parcs d'attractions.</p>
+          <p>Étudiant en 3<sup>e</sup> année de BUT Informatique à l'IUT Nord Franche-Comté, parcours Réalisation d'applications, je m'intéresse particulièrement au <strong>développement informatique</strong>, aux <strong>nouvelles technologies</strong> et aux possibilités qu'offre l'informatique pour simplifier le quotidien.</p>
+          <p>Curieux et autonome, j'aime apprendre, expérimenter et concrétiser mes idées. Je privilégie une <strong>approche pratique</strong> : comprendre un besoin, trouver une solution, la développer et m'assurer qu'elle fonctionne réellement. J'apprécie aussi le travail en équipe, le partage de connaissances et la découverte de nouvelles technologies.</p>
+          <p>Après mon BUT, je souhaite poursuivre mes études en me spécialisant en <strong>cybersécurité ou en intelligence artificielle</strong>, afin d'approfondir mes compétences et de travailler sur des sujets qui me passionnent. À plus long terme, j'aimerais entreprendre et créer ma propre entreprise, tout en restant ouvert aux opportunités professionnelles qui pourraient se présenter.</p>
           <h2>En bref</h2>
           <dl class="infos">
             <div><dt>Localisation</dt><dd>Vézelois, Territoire de Belfort (90)</dd></div>
@@ -171,7 +168,6 @@
             <div><dt>Langues</dt><dd>Français, anglais (B1)</dd></div>
             <div><dt>Formation</dt><dd>BUT Informatique, IUT Nord Franche-Comté · 3<sup>e</sup> année</dd></div>
             <div><dt>Expériences</dt><dd>Stage chez EzDEV (avril – juin 2026) · stage chez Actemium dès janvier 2027</dd></div>
-            <div><dt>Après le BUT</dt><dd>Poursuite d'études en cybersécurité ou en IA, création d'entreprise, ouvert à un emploi</dd></div>
             <div><dt>Qualités</dt><dd>Autonome, organisé, curieux, à l'aise en équipe</dd></div>
             <div><dt>Loisirs</dt><dd>Football en club depuis 14 ans, parcs d'attractions, jeux vidéo de gestion et de stratégie</dd></div>
           </dl>
@@ -651,32 +647,46 @@
         <h2>Ce que je suis en ce moment</h2>
         <ul class="pills pills--soft pills--veille"><li>Évolution de Python</li><li>Vidéo dans le navigateur (WebCodecs, WebGL)</li><li>Assistants de code IA</li><li>Sécurité des dépendances</li><li>React Native et Expo</li></ul>
         <h2>Mes notes de veille</h2>
+        <ol class="vtoc" aria-label="Sommaire des notes de veille">
+          <li><a href="#veille-ia"><span class="vtag">IA et sécurité</span><strong>Assistants de code IA : un gain de temps, à condition de tout relire</strong><small>Novembre 2026</small></a></li>
+          <li><a href="#veille-webcodecs"><span class="vtag">Web</span><strong>WebCodecs : monter de la vidéo 4K sans quitter le navigateur</strong><small>Octobre 2026</small></a></li>
+          <li><a href="#veille-python"><span class="vtag">Python</span><strong>Python 3.13 : une seule ligne peut empêcher une application de démarrer</strong><small>Juin 2026</small></a></li>
+        </ol>
 
-        <article class="vnote" id="veille-python">
-          <p class="vnote__date">Juin 2026 · Python</p>
-          <h3>Python 3.13 : une seule ligne peut empêcher une application de démarrer</h3>
-          <p>Python 3.13 retire de la bibliothèque standard une vingtaine de modules anciens (<code>cgi</code>, <code>crypt</code>, <code>telnetlib</code>, <code>imghdr</code>…), et <code>imp</code> avait déjà disparu en 3.12. Un programme qui les importe, lui ou l'une de ses dépendances, s'arrête dès le lancement.</p>
-          <p>Je l'ai vérifié sur mes propres projets : un vieux TP Flask de 1<sup>re</sup> année contenait un <code>from crypt import methods</code> ajouté par erreur par l'autocomplétion. Inutile depuis toujours, cette ligne suffit à faire planter l'application sous Python 3.13.</p>
-          <p><strong>Ce que j'en retiens</strong> : avant une montée de version, on fait l'inventaire de ce qu'on importe vraiment. C'est exactement ce que fait le script d'analyse que j'ai écrit pendant mon stage chez EzDEV.</p>
-          <p class="vnote__src">Sources : <a href="https://docs.python.org/3/whatsnew/3.13.html" target="_blank" rel="noopener noreferrer">What's New in Python 3.13</a> · <a href="https://peps.python.org/pep-0594/" target="_blank" rel="noopener noreferrer">PEP 594</a></p>
+        <article class="vnote" id="veille-ia">
+          <header class="vnote__head">
+            <p class="vnote__meta"><span class="vtag">IA et sécurité</span><time datetime="2026-11">Novembre 2026</time><span aria-hidden="true">·</span><span>2 min de lecture</span></p>
+            <h3>Assistants de code IA : un gain de temps, à condition de tout relire</h3>
+            <p class="vnote__lead">Un code généré qui a l'air juste n'est pas forcément un code sûr.</p>
+          </header>
+          <p>Les assistants de code écrivent vite un code qui a l'air juste. Le risque est ailleurs : une fonction qui ne gère pas un cas limite, ou une <strong>bibliothèque qui n'existe pas</strong>. Des attaquants publient justement des paquets portant ces noms inventés, pour piéger ceux qui installent sans vérifier.</p>
+          <p>Ma règle sur mes projets : je ne garde que le code que je comprends, chaque dépendance est vérifiée sur son dépôt officiel, et rien n'est livré sans être testé.</p>
+          <div class="vnote__take"><p class="vnote__take-title">Ce que j'en retiens</p><p>L'IA change la façon de coder, et c'est aussi pour cela que la cybersécurité et l'IA sont les deux domaines dans lesquels j'aimerais poursuivre mes études.</p></div>
+          <footer class="vnote__src"><span>Sources</span><a href="https://genai.owasp.org/llm-top-10/" target="_blank" rel="noopener noreferrer">OWASP Top 10 pour les applications LLM</a><a href="https://www.cert.ssi.gouv.fr/" target="_blank" rel="noopener noreferrer">CERT-FR (ANSSI)</a></footer>
         </article>
 
         <article class="vnote" id="veille-webcodecs">
-          <p class="vnote__date">Octobre 2026 · Web</p>
-          <h3>WebCodecs : monter de la vidéo 4K sans quitter le navigateur</h3>
+          <header class="vnote__head">
+            <p class="vnote__meta"><span class="vtag">Web</span><time datetime="2026-10">Octobre 2026</time><span aria-hidden="true">·</span><span>2 min de lecture</span></p>
+            <h3>WebCodecs : monter de la vidéo 4K sans quitter le navigateur</h3>
+            <p class="vnote__lead">Le navigateur sait enfin décoder et réencoder la vidéo, image par image.</p>
+          </header>
           <p>Pendant longtemps, le navigateur savait lire une vidéo, mais pas la découper image par image ni la réencoder. L'API <strong>WebCodecs</strong> donne enfin accès aux décodeurs et encodeurs de la machine, y compris ceux de la carte graphique.</p>
           <p>C'est ce qui rend possible CutLocal, mon éditeur vidéo local : décoder sur la carte graphique, appliquer les effets en WebGL2, puis réencoder, sans rien envoyer sur un serveur. Le piège : la mémoire. Chaque image décodée doit être libérée à la main, sinon la lecture s'effondre en quelques secondes.</p>
-          <p><strong>Ce que j'en retiens</strong> : une API récente ouvre des usages nouveaux, mais il faut lire sa documentation jusqu'au bout et tester sur plusieurs navigateurs.</p>
-          <p class="vnote__src">Sources : <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebCodecs_API" target="_blank" rel="noopener noreferrer">MDN, API WebCodecs</a> · <a href="https://www.w3.org/TR/webcodecs/" target="_blank" rel="noopener noreferrer">Spécification W3C</a></p>
+          <div class="vnote__take"><p class="vnote__take-title">Ce que j'en retiens</p><p>Une API récente ouvre des usages nouveaux, mais il faut lire sa documentation jusqu'au bout et tester sur plusieurs navigateurs.</p></div>
+          <footer class="vnote__src"><span>Sources</span><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebCodecs_API" target="_blank" rel="noopener noreferrer">MDN, API WebCodecs</a><a href="https://www.w3.org/TR/webcodecs/" target="_blank" rel="noopener noreferrer">Spécification W3C</a></footer>
         </article>
 
-        <article class="vnote" id="veille-ia">
-          <p class="vnote__date">Novembre 2026 · IA et sécurité</p>
-          <h3>Assistants de code IA : un gain de temps, à condition de tout relire</h3>
-          <p>Les assistants de code écrivent vite un code qui a l'air juste. Le risque est ailleurs : une fonction qui ne gère pas un cas limite, ou une <strong>bibliothèque qui n'existe pas</strong>. Des attaquants publient justement des paquets portant ces noms inventés, pour piéger ceux qui installent sans vérifier.</p>
-          <p>Ma règle sur mes projets : je ne garde que le code que je comprends, chaque dépendance est vérifiée sur son dépôt officiel, et rien n'est livré sans être testé.</p>
-          <p><strong>Ce que j'en retiens</strong> : l'IA change la façon de coder, et c'est aussi pour cela que la cybersécurité et l'IA sont les deux domaines dans lesquels j'aimerais poursuivre mes études.</p>
-          <p class="vnote__src">Sources : <a href="https://genai.owasp.org/llm-top-10/" target="_blank" rel="noopener noreferrer">OWASP Top 10 pour les applications LLM</a> · <a href="https://www.cert.ssi.gouv.fr/" target="_blank" rel="noopener noreferrer">CERT-FR (ANSSI)</a></p>
+        <article class="vnote" id="veille-python">
+          <header class="vnote__head">
+            <p class="vnote__meta"><span class="vtag">Python</span><time datetime="2026-06">Juin 2026</time><span aria-hidden="true">·</span><span>2 min de lecture</span></p>
+            <h3>Python 3.13 : une seule ligne peut empêcher une application de démarrer</h3>
+            <p class="vnote__lead">Des modules disparaissent de la bibliothèque standard : mieux vaut le savoir avant de mettre à jour.</p>
+          </header>
+          <p>Python 3.13 retire de la bibliothèque standard une vingtaine de modules anciens (<code>cgi</code>, <code>crypt</code>, <code>telnetlib</code>, <code>imghdr</code>…), et <code>imp</code> avait déjà disparu en 3.12. Un programme qui les importe, lui ou l'une de ses dépendances, s'arrête dès le lancement.</p>
+          <p>Je l'ai vérifié sur mes propres projets : un vieux TP Flask de 1<sup>re</sup> année contenait un <code>from crypt import methods</code> ajouté par erreur par l'autocomplétion. Inutile depuis toujours, cette ligne suffit à faire planter l'application sous Python 3.13.</p>
+          <div class="vnote__take"><p class="vnote__take-title">Ce que j'en retiens</p><p>Avant une montée de version, on fait l'inventaire de ce qu'on importe vraiment. C'est exactement ce que fait le script d'analyse que j'ai écrit pendant mon stage chez EzDEV.</p></div>
+          <footer class="vnote__src"><span>Sources</span><a href="https://docs.python.org/3/whatsnew/3.13.html" target="_blank" rel="noopener noreferrer">What's New in Python 3.13</a><a href="https://peps.python.org/pep-0594/" target="_blank" rel="noopener noreferrer">PEP 594</a></footer>
         </article>
       </article>
 
@@ -721,7 +731,7 @@
       </article>
 
     </div>
-  </section>
+  </main>
 
   <!-- Fiche détaillée d'un projet (3D et classique) -->
   <dialog class="pmodal" id="pmodal" aria-label="Détail du projet">
