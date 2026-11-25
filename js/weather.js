@@ -73,39 +73,41 @@
   const GREY_NIGHT_TOP = [10, 14, 22], GREY_NIGHT_BOT = [26, 34, 46];
   const STORM_TOP = [40, 46, 58], STORM_BOT = [88, 96, 108];
 
-  function drawSky(ctx, w, h, t, opts) {
-    opts = opts || {};
-    const k = kind();
-    const pn = parisNow();
-    const f = dayFactor(pn.minutes);
-    const sc = Math.min(w, h) / 600; // échelle des éléments
-
-    // Dégradé du ciel
+  // ---------- Éléments du ciel : chacun est dessiné par une petite fonction, réutilisée par drawSky et par createSky ----------
+  function skyState() {
+    const k = kind(), pn = parisNow(), f = dayFactor(pn.minutes);
+    return { k, pn, f, heavy: Math.max(k.cloud * 0.85, k.storm) };
+  }
+  function skyColors(st) {
+    const { k, f, heavy } = st;
     let top = mix(NIGHT_TOP, DAY_TOP, f), bot = mix(NIGHT_BOT, DAY_BOT, f);
     const gtop = mix(GREY_NIGHT_TOP, GREY_DAY_TOP, f), gbot = mix(GREY_NIGHT_BOT, GREY_DAY_BOT, f);
-    const heavy = Math.max(k.cloud * 0.85, k.storm);
     top = mix(top, gtop, heavy); bot = mix(bot, gbot, heavy);
     if (k.storm) { top = mix(top, mix(STORM_TOP, [6, 8, 14], 1 - f), k.storm * 0.8); bot = mix(bot, mix(STORM_BOT, [16, 20, 28], 1 - f), k.storm * 0.8); }
     const golden = Math.max(0, 1 - Math.abs(f * 2 - 1)) * (1 - heavy * 0.6);
+    const cl = mix(mix([120, 130, 150], [255, 255, 255], f), mix([30, 34, 44], [120, 128, 140], f), heavy * 0.8 + k.storm * 0.4);
+    return { top, bot, golden, cl };
+  }
+  function paintGradient(ctx, w, h, col) {
     const g = ctx.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, rgb(top));
-    g.addColorStop(0.62, rgb(mix(bot, [255, 150, 80], golden * 0.55)));
-    g.addColorStop(1, rgb(mix(bot, [255, 190, 110], golden * 0.4)));
+    g.addColorStop(0, rgb(col.top));
+    g.addColorStop(0.62, rgb(mix(col.bot, [255, 150, 80], col.golden * 0.55)));
+    g.addColorStop(1, rgb(mix(col.bot, [255, 190, 110], col.golden * 0.4)));
     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-
-    // Étoiles
-    const starA = (1 - f) * (1 - k.cloud * 0.9);
-    if (starA > 0.03) {
-      for (let i = 0; i < (opts.small ? 30 : 140); i++) {
-        const tw = 0.6 + 0.4 * Math.sin(t * (0.8 + hash(i + 9)) + i);
-        ctx.fillStyle = 'rgba(255,255,255,' + (starA * tw * (0.4 + hash(i + 3) * 0.6)).toFixed(3) + ')';
-        const s = (hash(i + 5) > 0.9 ? 2.4 : 1.4) * Math.max(1, sc);
-        ctx.fillRect(hash(i) * w, hash(i + 1) * h * 0.8, s, s);
-      }
+  }
+  function paintStars(ctx, w, h, t, st, sc, opts) {
+    const starA = (1 - st.f) * (1 - st.k.cloud * 0.9);
+    if (starA <= 0.03) return;
+    for (let i = 0; i < (opts.small ? 30 : 140); i++) {
+      const tw = 0.6 + 0.4 * Math.sin(t * (0.8 + hash(i + 9)) + i);
+      ctx.fillStyle = 'rgba(255,255,255,' + (starA * tw * (0.4 + hash(i + 3) * 0.6)).toFixed(3) + ')';
+      const s = (hash(i + 5) > 0.9 ? 2.4 : 1.4) * Math.max(1, sc);
+      ctx.fillRect(hash(i) * w, hash(i + 1) * h * 0.8, s, s);
     }
-
-    // Soleil ou lune
-    const a = arc(pn.minutes);
+  }
+  function paintBody(ctx, w, h, st, col, sc) {
+    const { k, f } = st;
+    const a = arc(st.pn.minutes);
     const px = w * (0.1 + 0.8 * a.p), py = h * (0.78 - Math.sin(a.p * Math.PI) * 0.55);
     const vis = (1 - k.cloud * 0.75) * (1 - k.fog * 0.5);
     if (a.sun && f > 0.01) {
@@ -122,33 +124,32 @@
       ctx.fillStyle = gl; ctx.fillRect(px - r * 4, py - r * 4, r * 8, r * 8);
       ctx.fillStyle = 'rgba(245,247,225,' + (0.35 + 0.65 * vis).toFixed(3) + ')';
       ctx.beginPath(); ctx.arc(px, py, r, 0, 7); ctx.fill();
-      ctx.fillStyle = 'rgba(' + Math.round(bot[0]) + ',' + Math.round(bot[1]) + ',' + Math.round(bot[2]) + ',' + (0.55 * vis).toFixed(3) + ')';
+      ctx.fillStyle = 'rgba(' + Math.round(col.bot[0]) + ',' + Math.round(col.bot[1]) + ',' + Math.round(col.bot[2]) + ',' + (0.55 * vis).toFixed(3) + ')';
       ctx.beginPath(); ctx.arc(px + r * 0.45, py - r * 0.2, r * 0.9, 0, 7); ctx.fill();
     }
-
-    // Nuages
-    const nClouds = Math.round(k.cloud * (opts.small ? 6 : 14)) + 1;
-    const cl = mix(mix([120, 130, 150], [255, 255, 255], f), mix([30, 34, 44], [120, 128, 140], f), heavy * 0.8 + k.storm * 0.4);
-    for (let i = 0; i < nClouds; i++) {
-      const speed = (0.004 + hash(i + 40) * 0.006) * (1 + W.wind / 25);
-      const x = (((hash(i + 20) * 1.5 + t * speed) % 1.5) - 0.25) * w;
-      const y = h * (0.1 + hash(i + 30) * 0.42);
-      const s = (50 + hash(i + 50) * 70) * sc;
-      ctx.fillStyle = rgb(cl, 0.35 + k.cloud * 0.5);
-      for (let j = 0; j < 5; j++) {
-        ctx.beginPath();
-        ctx.ellipse(x + (j - 2) * s * 0.42, y + Math.sin(j * 1.7) * s * 0.12, s * (0.5 + 0.18 * Math.sin(j * 2.3 + i)), s * 0.34, 0, 0, 7);
-        ctx.fill();
-      }
+  }
+  // Un nuage : cinq ellipses qui se chevauchent, centrées sur (cx, cy), de taille s
+  function paintCloudShape(ctx, i, s, cx, cy, fill) {
+    ctx.fillStyle = fill;
+    for (let j = 0; j < 5; j++) {
+      ctx.beginPath();
+      ctx.ellipse(cx + (j - 2) * s * 0.42, cy + Math.sin(j * 1.7) * s * 0.12, s * (0.5 + 0.18 * Math.sin(j * 2.3 + i)), s * 0.34, 0, 0, 7);
+      ctx.fill();
     }
-
+  }
+  function cloudSpecs(st, opts) {
+    const n = Math.round(st.k.cloud * (opts.small ? 6 : 14)) + 1, out = [];
+    for (let i = 0; i < n; i++) out.push({ i, speed: (0.004 + hash(i + 40) * 0.006) * (1 + W.wind / 25), x0: hash(i + 20) * 1.5, y: 0.1 + hash(i + 30) * 0.42, s: 50 + hash(i + 50) * 70 });
+    return out;
+  }
+  function paintFront(ctx, w, h, st) {
+    const { k, f, heavy } = st;
     // Silhouette de collines au loin
     const hillBase = mix([4, 8, 14], [40, 70, 60], f), hillGrey = mix(hillBase, [70, 78, 86], heavy * 0.6 * f);
     ctx.fillStyle = rgb(hillGrey);
     ctx.beginPath(); ctx.moveTo(0, h);
     for (let x = 0; x <= w; x += 8) ctx.lineTo(x, h * 0.9 - Math.sin(x / w * 5 + 1) * h * 0.04 - Math.sin(x / w * 11) * h * 0.015);
     ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
-
     // Brouillard
     if (k.fog) {
       const fg = ctx.createLinearGradient(0, 0, 0, h);
@@ -156,17 +157,87 @@
       fg.addColorStop(1, rgb(mix([60, 66, 78], [235, 238, 242], f), 0.8 * k.fog));
       ctx.fillStyle = fg; ctx.fillRect(0, 0, w, h);
     }
-
-    // Éclairs
-    if (k.storm) {
-      const slot = Math.floor(t / 5), at = t - slot * 5 - hash(slot + 3) * 3.5;
-      if (hash(slot) < 0.75 && at > 0 && at < 0.5) {
-        const fl = at < 0.12 ? 1 : (at < 0.2 ? 0.2 : (at < 0.28 ? 0.7 : 0));
-        ctx.fillStyle = 'rgba(235,240,255,' + (0.5 * fl).toFixed(2) + ')'; ctx.fillRect(0, 0, w, h);
-      }
+  }
+  function paintLightning(ctx, w, h, t, st) {
+    if (!st.k.storm) return;
+    const slot = Math.floor(t / 5), at = t - slot * 5 - hash(slot + 3) * 3.5;
+    if (hash(slot) < 0.75 && at > 0 && at < 0.5) {
+      const fl = at < 0.12 ? 1 : (at < 0.2 ? 0.2 : (at < 0.28 ? 0.7 : 0));
+      ctx.fillStyle = 'rgba(235,240,255,' + (0.5 * fl).toFixed(2) + ')'; ctx.fillRect(0, 0, w, h);
     }
+  }
+
+  // Ciel complet dessiné d'un coup (texture de la fenêtre de la chambre)
+  function drawSky(ctx, w, h, t, opts) {
+    opts = opts || {};
+    const st = skyState(), col = skyColors(st), sc = Math.min(w, h) / 600;
+    paintGradient(ctx, w, h, col);
+    paintStars(ctx, w, h, t, st, sc, opts);
+    paintBody(ctx, w, h, st, col, sc);
+    cloudSpecs(st, opts).forEach((c) => {
+      const x = (((c.x0 + t * c.speed) % 1.5) - 0.25) * w;
+      paintCloudShape(ctx, c.i, c.s * sc, x, h * c.y, rgb(col.cl, 0.35 + st.k.cloud * 0.5));
+    });
+    paintFront(ctx, w, h, st);
+    paintLightning(ctx, w, h, t, st);
     if (!opts.noPrecip) drawPrecip(ctx, w, h, t, opts);
-    return { f, k };
+    return { f: st.f, k: st.k };
+  }
+
+  // Ciel du fond de page : fluide et léger. Les nuages sont dessinés une seule fois dans de petites images, puis
+  // simplement déplacés à chaque image (quelques drawImage) ; le dégradé, le soleil / la lune, les collines et le
+  // brouillard sont gardés en mémoire et ne sont redessinés que s'ils changent (taille, météo, heure, étoiles la nuit).
+  function createSky(canvas, opts) {
+    opts = opts || {};
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const mk = () => { const c = document.createElement('canvas'); return { c, x: c.getContext('2d') }; };
+    const back = mk(), front = mk();
+    let w = 0, h = 0, dirty = true, builtAt = -1e9, backAt = -1e9, last = 0, clouds = [], st = null;
+    W.listeners.push(() => { dirty = true; });                 // la météo vient d'être mise à jour
+    function resize(nw, nh) {
+      w = canvas.width = nw; h = canvas.height = nh;
+      back.c.width = front.c.width = nw; back.c.height = front.c.height = nh;
+      dirty = true;
+    }
+    // Position des nuages à l'instant t (secondes) : même mouvement que drawSky
+    function seek(t) { clouds.forEach((c) => { c.pos = (c.x0 + t * c.speed) % 1.5; }); }
+    function rebuild(now) {
+      st = skyState();
+      const col = skyColors(st), sc = Math.min(w, h) / 600;
+      const old = clouds, specs = cloudSpecs(st, opts);
+      clouds = specs.map((c, k) => {
+        const S = c.s * sc, sw = Math.ceil(S * 3.1) + 4, sh = Math.ceil(S * 0.95) + 4;
+        const sp = document.createElement('canvas'); sp.width = sw; sp.height = sh;
+        paintCloudShape(sp.getContext('2d'), c.i, S, sw / 2, sh / 2, rgb(col.cl, 0.35 + st.k.cloud * 0.5));
+        return { sp, ox: sw / 2, oy: sh / 2, speed: c.speed, y: h * c.y, x0: c.x0, pos: old[k] ? old[k].pos : c.x0 };
+      });
+      front.x.clearRect(0, 0, w, h); paintFront(front.x, w, h, st);
+      builtAt = now; backAt = -1e9; dirty = false;
+    }
+    // Fond : dégradé + étoiles + soleil / lune. De jour il ne change presque pas ; la nuit les étoiles scintillent.
+    function paintBack(now, t) {
+      const col = skyColors(st), sc = Math.min(w, h) / 600;
+      paintGradient(back.x, w, h, col);
+      paintStars(back.x, w, h, t, st, sc, opts);
+      paintBody(back.x, w, h, st, col, sc);
+      backAt = now;
+    }
+    function frame(now) {
+      if (!w || !h) return;
+      const t = now / 1000, dt = Math.min(0.25, last ? (now - last) / 1000 : 0); last = now;
+      if (dirty || now - builtAt > 20000) { const first = !clouds.length; rebuild(now); if (first) seek(t); }
+      const night = (1 - st.f) * (1 - st.k.cloud * 0.9) > 0.03;
+      if (backAt < 0 || now - backAt > (night ? 260 : 20000)) paintBack(now, t);
+      ctx.drawImage(back.c, 0, 0);
+      for (let i = 0; i < clouds.length; i++) {
+        const c = clouds[i];
+        c.pos = (c.pos + c.speed * dt) % 1.5;
+        ctx.drawImage(c.sp, (c.pos - 0.25) * w - c.ox, c.y - c.oy);
+      }
+      ctx.drawImage(front.c, 0, 0);
+      paintLightning(ctx, w, h, t, st);
+    }
+    return { resize, frame, seek, invalidate() { dirty = true; } };
   }
 
   // Pluie et neige : dessinées à chaque image, sur une couche à part, pour un mouvement fluide
@@ -228,5 +299,5 @@
     return new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
   }
 
-  window.Weather = Object.assign(W, { parisDate, isDay() { return dayFactor(parisNow().minutes) > 0.5; }, kind, dayFactor, parisNow, drawSky, drawPrecip, arc, onChange(fn) { W.listeners.push(fn); } });
+  window.Weather = Object.assign(W, { parisDate, isDay() { return dayFactor(parisNow().minutes) > 0.5; }, kind, dayFactor, parisNow, drawSky, createSky, drawPrecip, arc, onChange(fn) { W.listeners.push(fn); } });
 })();

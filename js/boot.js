@@ -9,8 +9,8 @@
   var c = navigator.connection || {};
   var slow = !!c.saveData || /(^|-)2g$/.test(c.effectiveType || '');
   var weak = (navigator.deviceMemory && navigator.deviceMemory < 2) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 2);
-  // Téléphone : petit écran, ou écran tactile dont le plus petit côté est celui d'un téléphone
-  var phone = matchMedia('(max-width: 820px)').matches
+  // Téléphone ou petite fenêtre : la barre latérale de la chambre 3D a besoin d'au moins 900 px de large
+  var phone = matchMedia('(max-width: 900px)').matches
     || (matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600);
   var soft = false;   // WebGL calculé par le processeur (pas de carte graphique) : la 3D serait saccadée
   var gl = phone ? false : (function () {
@@ -34,18 +34,27 @@
     reason: mode === 'classic' && asked !== 'classique' && !phone ? (!gl ? 'webgl' : (slow ? 'reseau' : 'appareil')) : '',
   };
   html.classList.add(mode === 'classic' ? 'classic' : 'mode-3d');
+  // La barre latérale garde l'état choisi (ouverte ou fermée), appliqué avant le premier affichage pour qu'elle ne saute pas
+  try { if (localStorage.getItem('portfolio-menu') === 'closed') html.classList.add('side-closed'); } catch (e) { /* stockage indisponible */ }
 
   var files = ['js/main.min.js' + V];
-  if (mode === '3d') {
-    // Police de la chambre, chargée seulement pour la 3D
-    var f = document.createElement('link');
-    f.rel = 'stylesheet';
-    f.href = 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap';
-    document.head.appendChild(f);
-    files = ['js/vendor/three.min.js', 'js/vendor/OrbitControls.js', 'js/weather.min.js' + V, 'js/room.min.js' + V].concat(files);
+  // Police Ubuntu (texte, titres, textures de la chambre) : demandée tout de suite, sans attendre que le CSS soit analysé
+  ['400', '700'].forEach(function (w) {
+    var p = document.createElement('link');
+    p.rel = 'preload'; p.as = 'font'; p.type = 'font/woff2'; p.crossOrigin = 'anonymous'; p.href = 'fonts/ubuntu-' + w + '.woff2';
+    document.head.appendChild(p);
+  });
+  if (mode === '3d') files = ['js/vendor/three.min.js', 'js/vendor/OrbitControls.js', 'js/weather.min.js' + V, 'js/room.min.js' + V].concat(files);
+
+  // La chambre dessine du texte sur des textures : la police doit être prête avant sa création (1,5 s d'attente au plus)
+  function fontsReady(cb) {
+    var done = false;
+    function go() { if (!done) { done = true; cb(); } }
+    setTimeout(go, 1500);
+    if (document.fonts && document.fonts.load) Promise.all([document.fonts.load('400 16px Ubuntu'), document.fonts.load('700 16px Ubuntu')]).then(go, go);
+    else go();
   }
-  function next(i) {
-    if (i >= files.length) return;
+  function load(i) {
     var s = document.createElement('script');
     s.src = files[i];
     s.onload = function () { next(i + 1); };
@@ -54,6 +63,11 @@
       if (mode === '3d') location.replace('?vue=classique' + location.hash);
     };
     document.head.appendChild(s);
+  }
+  function next(i) {
+    if (i >= files.length) return;
+    if (mode === '3d' && i === files.length - 1) fontsReady(function () { load(i); });   // le dernier script crée la chambre
+    else load(i);
   }
   // Ce script est lu dans <head> pour que la vue classique s'affiche dès le premier rendu, sans écran
   // de chargement ; les scripts suivants ont besoin de toute la page, ils attendent donc la fin du HTML.

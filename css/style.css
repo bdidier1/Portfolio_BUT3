@@ -12,7 +12,7 @@
   --blue: #3794ff;
   --key: #9cdcfe;
   --com: #6a9955;
-  --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", "Fira Code", Consolas, monospace;
+  --mono: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --hud-h: 52px;
 }
 
@@ -308,7 +308,7 @@ img { max-width: 100%; height: auto; }
 .statusbar__left, .statusbar__right { display: flex; gap: 16px; }
 
 /* ===== À propos : page Markdown vue dans un lecteur ===== */
-.markdown-body { font-family: -apple-system, "Segoe UI", system-ui, Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.65; color: #d1d7e0; }
+.markdown-body { font-family: var(--mono); font-size: 1rem; line-height: 1.65; color: #d1d7e0; }
 .markdown-body h1 { font-size: 2rem; margin: 0 0 6px; padding: 0; border: 0; color: #fff; font-weight: 700; }
 .markdown-body h1::before { content: none; }
 .markdown-body h2 { font-size: 1.4rem; margin: 26px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #2a3340; color: #fff; }
@@ -353,8 +353,7 @@ body { -webkit-user-select: none; user-select: none; }
    Navigation, titres de section, bulle de pensée, compétences, CV,
    version classique, adaptations à tous les écrans
    ===================================================================== */
-:root { --rail: 44px; --safe-t: env(safe-area-inset-top, 0px); --safe-b: env(safe-area-inset-bottom, 0px); }
-.navtoggle svg, .drawer svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+:root { --rail: 0px; --side-w: 280px; --safe-t: env(safe-area-inset-top, 0px); --safe-b: env(safe-area-inset-bottom, 0px); }
 
 /* Titre de la section : sans fond, en blanc, bien lisible */
 .sectitle {
@@ -381,55 +380,7 @@ body { -webkit-user-select: none; user-select: none; }
 .secnav button:hover { border-color: var(--green); color: var(--green); }
 .secnav span { color: #fff; font-size: .8rem; font-weight: 600; text-shadow: 0 1px 6px #000; }
 
-/* Bouton à droite qui ouvre le menu latéral */
-.navtoggle {
-  position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 45;
-  width: var(--rail); height: 68px; display: grid; place-items: center; cursor: pointer; color: #fff;
-  background: #0b0f16e6; border: 1px solid #2a3340; border-right: 0; border-radius: 14px 0 0 14px;
-  box-shadow: -6px 0 24px #0006; backdrop-filter: blur(6px); transition: background .15s, width .15s, color .15s;
-}
-.navtoggle:hover { background: #10261a; color: var(--green); width: calc(var(--rail) + 6px); }
-.navtoggle svg { transition: transform .3s; }
-.drawer-open .navtoggle svg { transform: rotate(180deg); }
 
-/* Menu latéral */
-.drawer-backdrop { position: fixed; inset: 0; z-index: 60; background: #000a; opacity: 0; pointer-events: none; transition: opacity .3s; }
-.drawer-open .drawer-backdrop { opacity: 1; pointer-events: auto; }
-.drawer {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 61; width: min(360px, 90vw);
-  display: flex; flex-direction: column; background: #0a0e15f7; border-left: 1px solid #222c3a; box-shadow: -20px 0 60px #000a;
-  transform: translateX(105%); visibility: hidden; transition: transform .32s cubic-bezier(.2,.8,.2,1), visibility 0s linear .32s;
-  padding-bottom: var(--safe-b);
-}
-.drawer-open .drawer { transform: none; visibility: visible; transition: transform .32s cubic-bezier(.2,.8,.2,1); }
-.drawer__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: calc(14px + var(--safe-t)) 12px 8px 22px; }
-.drawer__title { margin: 0; font-size: 1.02rem; font-weight: 700; color: #fff; }
-.drawer__close { width: 44px; height: 44px; display: grid; place-items: center; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 12px; cursor: pointer; }
-.drawer__close:hover { color: #fff; background: #141b27; border-color: #2a3340; }
-.drawer__nav { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 4px 12px; }
-.drawer__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
-.drawer__item {
-  width: 100%; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; text-align: left;
-  font: inherit; color: var(--text); background: transparent; border: 1px solid transparent; border-radius: 12px; cursor: pointer;
-  transition: background .15s, border-color .15s;
-}
-.drawer__item:hover { background: #141b27; }
-.drawer__item.is-current { background: #0f2417; border-color: #1f6f33; }
-.drawer__ico { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; background: #141c29; color: var(--green); flex: none; }
-.drawer__txt { display: grid; min-width: 0; line-height: 1.3; }
-.drawer__txt strong { font-size: .92rem; color: #fff; }
-.drawer__txt small { font-size: .72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.drawer__foot { display: grid; gap: 8px; padding: 12px 14px 16px; border-top: 1px solid #1f2937; }
-.drawer__classic {
-  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; color: #fff;
-  background: linear-gradient(135deg, #0b6bcb, #0a4a8f); border: 1px solid #2b84dd;
-}
-.drawer__classic:hover { text-decoration: none; filter: brightness(1.12); }
-.drawer__classic span { display: grid; gap: 2px; line-height: 1.3; }
-.drawer__classic strong { font-size: .92rem; color: #fff; }
-.drawer__classic small { font-size: .74rem; color: #d6e8ff; }
-.drawer__cv { text-align: center; font-size: .82rem; font-weight: 600; color: var(--green); padding: 8px; border-radius: 10px; }
-.drawer__cv:hover { background: #0f2417; text-decoration: none; }
 
 /* La fenêtre et le retour laissent la place au bouton latéral */
 .window { right: calc(var(--rail) + 12px); }
@@ -512,8 +463,6 @@ body { -webkit-user-select: none; user-select: none; }
   .thought__cloud { width: min(460px, 50vw); }
 }
 @media (max-width: 720px) {
-  .navtoggle { top: calc(10px + var(--safe-t)); right: 10px; transform: none; width: 44px; height: 44px; border-right: 1px solid #2a3340; border-radius: 12px; }
-  .navtoggle:hover { width: 44px; }
   .modebar { top: calc(10px + var(--safe-t)); left: 10px; right: auto; }
   .sectitle { top: calc(60px + var(--safe-t)); left: 50%; }
   .sectitle__name { font-size: 1.9rem; }
@@ -552,21 +501,15 @@ body { -webkit-user-select: none; user-select: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .thought.is-in .thought__cloud, .sectitle, .browser { animation: none; }
-  .drawer, .navtoggle svg, .warp { transition: none; }
 }
 
 /* =====================================================================
    Menu latéral à gauche
    ===================================================================== */
-.navtoggle { right: auto; left: 0; border-right: 1px solid #2a3340; border-left: 0; border-radius: 0 14px 14px 0; box-shadow: 6px 0 24px #0006; }
-.drawer { right: auto; left: 0; border-left: 0; border-right: 1px solid #222c3a; box-shadow: 20px 0 60px #000a; transform: translateX(-105%); }
-.drawer-open .drawer { transform: none; }
-.drawer__head { padding: calc(14px + var(--safe-t)) 22px 8px 22px; }
 .window { right: 18px; }
 .modebar { right: 18px; }
-.title { left: calc(var(--rail) + 22px); }
+
 @media (max-width: 720px) {
-  .navtoggle { left: 10px; right: auto; border: 1px solid #2a3340; border-radius: 12px; }
   .modebar { left: auto; right: 10px; }
   .title { left: 64px; top: 12px; }
   .title__name { font-size: 1.75rem; }
@@ -665,22 +608,9 @@ body { -webkit-user-select: none; user-select: none; }
 .modal-open, .modal-open body { overflow: hidden !important; }
 
 /* En haut à droite : « Retour à la chambre » et le bouton de vue */
-.topright { position: fixed; top: calc(16px + var(--safe-t)); right: 18px; z-index: 46; display: flex; align-items: center; gap: 8px; }
-.topright .modebar { position: static; }
-.modeswitch {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px;
-  font: inherit; font-weight: 600; font-size: .9rem; color: #fff; text-decoration: none; white-space: nowrap;
-  background: #0b0f16ee; border: 1px solid #2a3340; backdrop-filter: blur(6px); transition: border-color .15s, color .15s;
-}
-.modeswitch:hover { border-color: var(--green); color: var(--green); text-decoration: none; }
-.modeswitch svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .mode-3d .window { top: calc(72px + var(--safe-t)); }
 .mode-3d .thought__cloud { top: calc(120px + var(--safe-t)); }
 @media (max-width: 720px) {
-  .topright { top: calc(10px + var(--safe-t)); right: 10px; gap: 6px; }
-  .modeswitch { width: 44px; padding: 0; justify-content: center; }
-  .modeswitch span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .topright .modebar button { padding: 8px 12px; font-size: .78rem; min-height: 44px; }
   .mode-3d .window { top: auto; }
 }
 
@@ -797,3 +727,104 @@ body { -webkit-user-select: none; user-select: none; }
 .dock [data-notes] { margin-left: 8px; }
 .card--panel h2 { margin-top: 18px; }
 .card--panel > h2:first-child { margin-top: 0; }
+
+/* ===== Vue 3D : la barre latérale est celle de la vue classique, la chambre occupe le reste de l'écran ===== */
+.mode-3d #scene, .mode-3d .pins { left: var(--side-w); }
+.mode-3d .title { left: calc(var(--side-w) + 26px); }
+.mode-3d .hint { left: calc(50% + var(--side-w) / 2); }
+.mode-3d .dock { left: calc(50% + var(--side-w) / 2); max-width: calc(100vw - var(--side-w) - 24px); }
+
+/* ===== Images des projets : visionneuse plein écran avec zoom (même rendu dans les deux vues) ===== */
+figure.is-zoomable { position: relative; }
+img.zoomable { cursor: zoom-in; transition: filter .2s, box-shadow .2s; }
+img.zoomable:hover { filter: brightness(1.08); }
+img.zoomable:focus-visible { outline: 3px solid #3fb950; outline-offset: 3px; }
+figure.is-zoomable::after {
+  content: ""; position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; pointer-events: none;
+  background: rgba(5, 7, 11, .78) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6'/%3E%3Cpath d='M15 15l5 5M10.5 8v5M8 10.5h5'/%3E%3C/svg%3E") center / 20px no-repeat;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .22); opacity: .92; transition: opacity .2s, transform .2s;
+}
+figure.is-zoomable:hover::after { opacity: 1; transform: scale(1.08); }
+@media (hover: none) { figure.is-zoomable::after { opacity: 1; } }
+
+.lightbox {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+  background: rgba(3, 5, 9, .985); color: #fff; overflow: hidden;
+}
+.lightbox:not([open]) { display: none; }
+.lightbox::backdrop { background: transparent; }
+.lightbox__bar {
+  position: absolute; z-index: 3; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px; background: linear-gradient(rgba(3, 5, 9, .85), rgba(3, 5, 9, 0)); pointer-events: none;
+}
+.lightbox__bar > * { pointer-events: auto; }
+.lightbox__count { margin: 0; min-width: 4em; font-size: .95rem; font-weight: 700; color: #e6ebf2; }
+.lightbox__tools { display: flex; align-items: center; gap: 8px; }
+.lightbox button {
+  font: inherit; color: #fff; cursor: pointer; display: grid; place-items: center; min-width: 46px; height: 46px; padding: 0 12px;
+  background: rgba(20, 27, 39, .92); border: 1px solid #2a3340; border-radius: 12px; transition: background .15s, border-color .15s, opacity .15s;
+}
+.lightbox button:hover:not(:disabled) { background: #1d2738; border-color: #3fb950; }
+.lightbox button:focus-visible { outline: 3px solid #3fb950; outline-offset: 2px; }
+.lightbox button:disabled { opacity: .35; cursor: default; }
+.lightbox button svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.lightbox__pct { min-width: 64px !important; font-size: .9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.lightbox__stage {
+  position: absolute; inset: 0; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; overflow: hidden; touch-action: none; cursor: zoom-in;
+  padding: 72px 72px 88px; box-sizing: border-box; user-select: none; -webkit-user-select: none;
+}
+.lightbox__stage.is-zoomed { cursor: grab; }
+.lightbox__stage.is-zoomed:active { cursor: grabbing; }
+.lightbox__img {
+  display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 6px; box-shadow: 0 10px 60px rgba(0, 0, 0, .6);
+  transform-origin: 50% 50%; will-change: transform; background: #0b0f16;
+}
+.lightbox__nav { position: absolute; z-index: 3; top: 50%; transform: translateY(-50%); width: 52px; height: 72px; }
+.lightbox__nav--prev { left: 12px; }
+.lightbox__nav--next { right: 12px; }
+.lightbox__cap, .lightbox__tip { position: absolute; z-index: 3; left: 0; right: 0; margin: 0; text-align: center; pointer-events: none; padding: 0 76px; }
+.lightbox__cap { bottom: calc(40px + env(safe-area-inset-bottom, 0px)); font-size: .95rem; font-weight: 500; color: #fff; text-shadow: 0 1px 10px #000, 0 0 3px #000; }
+.lightbox__tip { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); font-size: .8rem; color: #aeb8c8; text-shadow: 0 1px 8px #000; }
+.lightbox__cap:empty { display: none; }
+@media (max-width: 700px) {
+  .lightbox__stage { padding: 64px 8px 96px; }
+  .lightbox__nav { top: auto; bottom: calc(40px + env(safe-area-inset-bottom, 0px)); transform: none; width: 46px; height: 46px; }
+  .lightbox__nav--prev { left: 10px; } .lightbox__nav--next { right: 10px; }
+  .lightbox__cap, .lightbox__tip { padding: 0 64px; }
+  .lightbox__tip { display: none; }
+  .lightbox__cap { bottom: calc(20px + env(safe-area-inset-bottom, 0px)); font-size: .85rem; }
+}
+@media (prefers-reduced-motion: reduce) { img.zoomable, figure.is-zoomable::after, .lightbox button { transition: none; } }
+
+/* ===== Haut à droite : « Revenir à la chambre » (présent dans toutes les rubriques) et le bouton de vue ===== */
+.topright { position: fixed; top: calc(16px + var(--safe-t)); right: 18px; z-index: 46; display: flex; align-items: center; gap: 8px; }
+.topright .modebar { position: static; }
+.modeswitch {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  font: inherit; font-weight: 600; font-size: .9rem; color: #fff; text-decoration: none; white-space: nowrap;
+  background: #0b0f16ee; border: 1px solid #2a3340; backdrop-filter: blur(6px); transition: border-color .15s, color .15s;
+}
+.modeswitch:hover { border-color: var(--green); color: var(--green); text-decoration: none; }
+.modeswitch svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+/* « Revenir à la chambre » : même forme et même police que le bouton de vue, en vert pour qu'on le voie bien */
+.modebar button {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 12px; border-radius: 999px;
+  font: inherit; font-weight: 600; font-size: .9rem; color: #7ee787; white-space: nowrap; cursor: pointer;
+  background: #0f2417ee; border: 1px solid var(--green); backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 3px rgba(63, 185, 80, .2); transition: border-color .15s, color .15s, background .15s;
+}
+.modebar button:hover { background: #163a22; border-color: #7ee787; color: #fff; }
+.modebar button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.modebar button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+@media (max-width: 720px) {
+  .topright { top: calc(10px + var(--safe-t)); right: 10px; gap: 6px; }
+  .modeswitch { width: 44px; padding: 0; justify-content: center; }
+  .modeswitch span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .topright .modebar button { padding: 8px 12px; font-size: .78rem; min-height: 44px; }
+}
+
+/* ===== Mode allégé : ajouté automatiquement quand l'ordinateur n'affiche pas assez d'images par seconde ===== */
+.lite *, .lite *::before, .lite *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.lite .thought__cloud { filter: none !important; }
+.lite .window, .lite .sectitle, .lite .bubble, .lite .thought__cloud, .lite .browser { animation: none !important; }
+.lite .window, .lite .browser, .lite .dock, .lite .secnav button { box-shadow: none !important; }

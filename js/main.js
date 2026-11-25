@@ -65,12 +65,13 @@
     catsOf(card).forEach((k) => { const s = document.createElement('span'); s.textContent = CAT_LABEL[k] || k; cats.append(s); });
     c.prepend(cats);
     dlgBody.append(c);
+    markZoomable(c);
     html.classList.add('modal-open');
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
     dlgBody.scrollTop = 0;
     $('#pmodal-close').focus({ preventScroll: true });
   }
-  function closeProject() { if (dlg.open) { if (typeof dlg.close === 'function') dlg.close(); else { dlg.removeAttribute('open'); onClosed(); } } }
+  function closeProject() { if (dlg.open) { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); onClosed(); } }
   function onClosed() {
     html.classList.remove('modal-open');
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
@@ -93,6 +94,159 @@
   dlg.addEventListener('close', onClosed);
   $('#pmodal-close').addEventListener('click', closeProject);
   dlg.addEventListener('click', (e) => { if (e.target === dlg) closeProject(); });   // clic à côté de la fiche
+
+  // ---------- Images des projets : un clic les affiche en grand, avec zoom ----------
+  // Zoom : molette, boutons + et −, double clic / double toucher, pincement ; déplacement : glisser ou flèches.
+  const lb = document.createElement('dialog');
+  lb.className = 'lightbox'; lb.setAttribute('aria-label', 'Image du projet en grand');
+  const I = { plus: 'M12 5v14M5 12h14', minus: 'M5 12h14', close: 'M6 6l12 12M18 6L6 18', prev: 'M15 5l-7 7 7 7', next: 'M9 5l7 7-7 7' };
+  lb.innerHTML = '<div class="lightbox__bar"><p class="lightbox__count" aria-live="polite"></p><div class="lightbox__tools">'
+    + '<button type="button" data-act="out" aria-label="Dézoomer">' + svg(I.minus) + '</button>'
+    + '<button type="button" data-act="reset" class="lightbox__pct" aria-label="Revenir à la taille d\'origine">100%</button>'
+    + '<button type="button" data-act="in" aria-label="Zoomer">' + svg(I.plus) + '</button>'
+    + '<button type="button" data-act="close" aria-label="Fermer l\'image">' + svg(I.close) + '</button></div></div>'
+    + '<div class="lightbox__stage"><img class="lightbox__img" alt="" draggable="false"></div>'
+    + '<button type="button" class="lightbox__nav lightbox__nav--prev" data-act="prev" aria-label="Image précédente">' + svg(I.prev) + '</button>'
+    + '<button type="button" class="lightbox__nav lightbox__nav--next" data-act="next" aria-label="Image suivante">' + svg(I.next) + '</button>'
+    + '<p class="lightbox__cap"></p><p class="lightbox__tip">Molette ou double clic pour zoomer · glisser pour déplacer · Échap pour fermer</p>';
+  document.body.append(lb);
+  const lbStage = lb.querySelector('.lightbox__stage'), lbImg = lb.querySelector('.lightbox__img');
+  const lbPct = lb.querySelector('.lightbox__pct'), lbOut = lb.querySelector('[data-act="out"]'), lbIn = lb.querySelector('[data-act="in"]');
+  const lbPrev = lb.querySelector('[data-act="prev"]'), lbNext = lb.querySelector('[data-act="next"]');
+  const LB_MAX = 6;
+  let lbList = [], lbIdx = 0, lbScale = 1, lbX = 0, lbY = 0, lbOpener = null;
+
+  function lbApply() {
+    // L'image ne peut pas sortir de la scène : on borne le déplacement selon la taille zoomée
+    const mx = Math.max(0, (lbImg.offsetWidth * lbScale - lbStage.clientWidth) / 2);
+    const my = Math.max(0, (lbImg.offsetHeight * lbScale - lbStage.clientHeight) / 2);
+    lbX = Math.max(-mx, Math.min(mx, lbX)); lbY = Math.max(-my, Math.min(my, lbY));
+    lbImg.style.transform = 'translate(' + lbX.toFixed(1) + 'px,' + lbY.toFixed(1) + 'px) scale(' + lbScale.toFixed(3) + ')';
+    lbPct.textContent = Math.round(lbScale * 100) + '%';
+    lbStage.classList.toggle('is-zoomed', lbScale > 1.001);
+    lbOut.disabled = lbScale <= 1.001; lbIn.disabled = lbScale >= LB_MAX - 0.001;
+  }
+  // (cx, cy) : point à garder sous le curseur, mesuré depuis le centre de la scène
+  function lbZoom(next, cx, cy) {
+    next = Math.max(1, Math.min(LB_MAX, next));
+    const k = next / lbScale;
+    lbX = cx - (cx - lbX) * k; lbY = cy - (cy - lbY) * k; lbScale = next;
+    if (next === 1) { lbX = 0; lbY = 0; }
+    lbApply();
+  }
+  const lbCenter = (x, y) => { const r = lbStage.getBoundingClientRect(); return [x - (r.left + r.width / 2), y - (r.top + r.height / 2)]; };
+  function lbShow(i) {
+    lbIdx = i; lbScale = 1; lbX = 0; lbY = 0;
+    const im = lbList[i], fig = im.closest('figure'), cap = fig && fig.querySelector('figcaption');
+    lbImg.removeAttribute('src');
+    lbImg.src = im.currentSrc || im.src;
+    lbImg.alt = im.alt || '';
+    lb.querySelector('.lightbox__cap').textContent = (cap && cap.textContent.trim()) || im.alt || '';
+    lb.querySelector('.lightbox__count').textContent = lbList.length > 1 ? (i + 1) + ' / ' + lbList.length : '';
+    lbPrev.hidden = lbNext.hidden = lbList.length < 2;
+    lbPrev.disabled = i === 0; lbNext.disabled = i === lbList.length - 1;
+    lbApply();
+  }
+  lbImg.addEventListener('load', lbApply);
+  addEventListener('resize', () => { if (lb.open) lbApply(); });
+  function openLightbox(list, i, from) {
+    lbList = list; lbOpener = from;
+    lbShow(i);
+    if (typeof lb.showModal === 'function') lb.showModal(); else lb.setAttribute('open', '');
+    lb.querySelector('[data-act="close"]').focus({ preventScroll: true });
+  }
+  // Fermeture : le focus revient tout de suite sur l'image cliquée (l'événement « close » sert de filet pour la touche Échap)
+  function lbRestore() {
+    lbImg.removeAttribute('src');
+    if (lbOpener && lbOpener.isConnected && lbOpener.focus) lbOpener.focus({ preventScroll: true });
+    lbOpener = null;
+  }
+  function lbClose() { if (lb.open) { lb.close(); lbRestore(); } }
+  lb.addEventListener('close', lbRestore);
+  lb.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const a = b.dataset.act;
+    if (a === 'close') lbClose();
+    else if (a === 'in') lbZoom(lbScale * 1.5, 0, 0);
+    else if (a === 'out') lbZoom(lbScale / 1.5, 0, 0);
+    else if (a === 'reset') lbZoom(1, 0, 0);
+    else if (a === 'prev' && lbIdx > 0) lbShow(lbIdx - 1);
+    else if (a === 'next' && lbIdx < lbList.length - 1) lbShow(lbIdx + 1);
+  });
+  lbStage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const c = lbCenter(e.clientX, e.clientY);
+    lbZoom(lbScale * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0018)), c[0], c[1]);
+  }, { passive: false });
+  // Souris et doigts : un pointeur déplace l'image zoomée, deux pointeurs la pincent
+  const lbPtrs = new Map(); let lbPinch = null, lbDrag = null, lbMoved = false, lbTapAt = 0;
+  lbStage.addEventListener('pointerdown', (e) => {
+    if (e.button > 0) return;
+    try { lbStage.setPointerCapture(e.pointerId); } catch (err) { /* pointeur déjà terminé : on continue sans capture */ }
+    lbPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); lbMoved = false;
+    if (lbPtrs.size === 2) { const p = [...lbPtrs.values()]; lbPinch = { d: Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1, s: lbScale }; lbDrag = null; }
+    else if (lbPtrs.size === 1) lbDrag = { x: e.clientX, y: e.clientY, tx: lbX, ty: lbY };
+  });
+  lbStage.addEventListener('pointermove', (e) => {
+    const p = lbPtrs.get(e.pointerId); if (!p) return;
+    p.x = e.clientX; p.y = e.clientY;
+    if (lbPinch && lbPtrs.size === 2) {
+      const q = [...lbPtrs.values()], c = lbCenter((q[0].x + q[1].x) / 2, (q[0].y + q[1].y) / 2);
+      lbZoom(lbPinch.s * Math.hypot(q[0].x - q[1].x, q[0].y - q[1].y) / lbPinch.d, c[0], c[1]); lbMoved = true;
+    } else if (lbDrag) {
+      const dx = e.clientX - lbDrag.x, dy = e.clientY - lbDrag.y;
+      if (Math.hypot(dx, dy) > 5) lbMoved = true;
+      if (lbScale > 1.001) { lbX = lbDrag.tx + dx; lbY = lbDrag.ty + dy; lbApply(); }
+    }
+  });
+  function lbEnd(e, tap) {
+    lbPtrs.delete(e.pointerId);
+    if (lbPtrs.size < 2) lbPinch = null;
+    if (lbPtrs.size === 1) { const p = [...lbPtrs.values()][0]; lbDrag = { x: p.x, y: p.y, tx: lbX, ty: lbY }; } else lbDrag = null;
+    if (!tap) return;
+    // Double clic / double toucher : zoom avant sur le point visé, ou retour à la taille d'origine
+    const now = performance.now();
+    if (now - lbTapAt < 320) { const c = lbCenter(e.clientX, e.clientY); lbZoom(lbScale > 1.05 ? 1 : 2.5, c[0], c[1]); lbTapAt = 0; }
+    else {
+      lbTapAt = now;
+      const r = lbImg.getBoundingClientRect();     // la capture du pointeur fait de la scène la cible : on teste la position
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) lbClose();   // un clic dans le noir ferme l'image
+    }
+  }
+  lbStage.addEventListener('pointerup', (e) => lbEnd(e, !lbMoved && lbPtrs.size === 1));
+  lbStage.addEventListener('pointercancel', (e) => lbEnd(e, false));
+  lb.addEventListener('keydown', (e) => {
+    const step = 70;
+    if (e.key === '+' || e.key === '=') { e.preventDefault(); lbZoom(lbScale * 1.4, 0, 0); }
+    else if (e.key === '-' || e.key === '_') { e.preventDefault(); lbZoom(lbScale / 1.4, 0, 0); }
+    else if (e.key === '0') { e.preventDefault(); lbZoom(1, 0, 0); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      if (e.target.closest && e.target.closest('button') && lbScale <= 1.001 && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) return;
+      e.preventDefault();
+      if (lbScale > 1.001) {
+        if (e.key === 'ArrowLeft') lbX += step; else if (e.key === 'ArrowRight') lbX -= step; else if (e.key === 'ArrowUp') lbY += step; else lbY -= step;
+        lbApply();
+      } else if (e.key === 'ArrowLeft' && lbIdx > 0) lbShow(lbIdx - 1);
+      else if (e.key === 'ArrowRight' && lbIdx < lbList.length - 1) lbShow(lbIdx + 1);
+    }
+  });
+
+  // Les images des fiches deviennent cliquables (souris, toucher, clavier)
+  function markZoomable(root) {
+    root.querySelectorAll('figure img').forEach((im) => {
+      im.classList.add('zoomable'); im.tabIndex = 0; im.setAttribute('role', 'button');
+      im.setAttribute('aria-label', 'Agrandir l\'image' + (im.alt ? ' : ' + im.alt : ''));
+      im.closest('figure').classList.add('is-zoomable');
+    });
+  }
+  const zoomables = () => [...dlgBody.querySelectorAll('figure img.zoomable')];
+  dlgBody.addEventListener('click', (e) => {
+    const im = e.target.closest('img.zoomable'); if (!im) return;
+    const all = zoomables(); openLightbox(all, all.indexOf(im), im);
+  });
+  dlgBody.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('zoomable')) { e.preventDefault(); e.target.click(); }
+  });
 
   // Boutons de catégorie : Tous, Stages, Universitaires, Personnels, Automatisation
   function buildFilters(active, onChange) {
@@ -185,9 +339,26 @@
     const to3d = BOOT.mode === 'classic';
     sw.href = (to3d ? '?vue=3d' : '?vue=classique') + k;
     sw.innerHTML = svg(to3d ? ICONS.cube : ICONS.list) + '<span>' + (to3d ? 'Vue 3D' : 'Vue classique') + '</span>';
+    sw.dataset.ready = '1';
     sw.setAttribute('aria-label', to3d ? 'Vue 3D : passer à la chambre en 3D' : 'Vue classique : passer à la page sans 3D');
   }
   if (sw && BOOT.mode === 'classic' && !BOOT.gl) sw.remove(); else updateSwitch(null);
+
+  // ---------- Barre latérale : on peut l'ouvrir et la fermer quand on veut (grand écran) ----------
+  const sideBtn = $('#side-toggle');
+  function paintSide() {
+    const open = !html.classList.contains('side-closed');
+    sideBtn.setAttribute('aria-expanded', String(open));
+    sideBtn.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+  }
+  function setSide(open) {
+    html.classList.toggle('side-closed', !open);
+    paintSide();
+    try { localStorage.setItem('portfolio-menu', open ? 'open' : 'closed'); } catch (e) { /* stockage indisponible : l'état n'est juste pas retenu */ }
+    window.dispatchEvent(new Event('sidechange'));
+  }
+  sideBtn.addEventListener('click', () => setSide(html.classList.contains('side-closed')));
+  paintSide();
 
   // ---------- Vue classique (choisie, ou imposée par l'appareil) ----------
   let room = null;
@@ -206,7 +377,7 @@
     // Classes changées seulement si besoin : chaque modification de <html> recalcule les styles de toute la page
     if (!html.classList.contains('classic')) { html.classList.remove('mode-3d'); html.classList.add('classic'); }
     BOOT.mode = 'classic'; updateSwitch(null);
-    ['#scene', '#sky', '#precip', '#pins', '#bubble', '#hint', '#thought', '#modebar', '#secnav', '#sectitle', '#dock', '#browser', '#nav-toggle', '#drawer', '#drawer-backdrop', '#title']
+    ['#scene', '#sky', '#precip', '#pins', '#bubble', '#hint', '#thought', '#modebar', '#secnav', '#sectitle', '#dock', '#browser', '#title']
       .forEach((s) => { const el = $(s); if (el) el.remove(); });
     const note = $('#classic-note');
     const NOTES = {
@@ -280,36 +451,35 @@
   const sectitle = $('#sectitle');
   const thought = $('#thought');
   const cloud = $('#thought-cloud');
-  const navToggle = $('#nav-toggle');
-  const drawer = $('#drawer');
-  { const cs = $('.classic-side'); if (cs) cs.remove(); }
+  // Barre latérale : la même que la vue classique ; en 3D elle occupe la gauche et la chambre le reste de l'écran
+  const sideW = () => (matchMedia('(max-width: 900px)').matches || html.classList.contains('side-closed') ? 0 : 280);
 
   let current = null;       // rubrique affichée (null = vue d'ensemble)
   let openKeys = [];        // onglets de la fenêtre
   let active = null;
 
   // ---------- Ciel en temps réel (météo de Belfort) ----------
-  // Le fond (dégradé, nuages lents) est redessiné 8 fois par seconde ; la pluie, à chaque image, sur sa propre couche
+  // Les nuages sont déplacés à chaque image (30 par seconde au plus, 20 si l'ordinateur peine) : mouvement fluide et très léger,
+  // car le décor est gardé en mémoire (voir createSky dans weather.js). La pluie, à chaque image, sur sa propre couche.
   (function sky() {
-    const c = $('#sky'), ctx = c.getContext('2d', { alpha: false });
-    const pc = $('#precip'), pctx = pc.getContext('2d');
+    const c = $('#sky'), pc = $('#precip'), pctx = pc.getContext('2d');
+    const bg = window.Weather.createSky(c);
     let pw = 1, ph = 1;
     function fit() {
       const sc = isMobile() ? 0.35 : 0.5;
-      c.width = Math.ceil(innerWidth * sc); c.height = Math.ceil(innerHeight * sc);
+      bg.resize(Math.ceil(innerWidth * sc), Math.ceil(innerHeight * sc));
       pw = pc.width = innerWidth; ph = pc.height = innerHeight;
-      lastBg = -1e9;
     }
     let lastBg = -1e9, wet = false;
     fit(); addEventListener('resize', fit);
     (function loop(now) {
       requestAnimationFrame(loop);
       if (document.hidden || current === 'parcours') return;   // caché par le monde au-dessus des nuages
-      const t = now / 1000;
-      if (now - lastBg > 125) { lastBg = now; window.Weather.drawSky(ctx, c.width, c.height, t, { noPrecip: true }); }
+      const gap = html.classList.contains('lite') ? 48 : 30;
+      if (now - lastBg >= gap) { lastBg = now; bg.frame(now); }
       if (wet || window.Weather.kind().rain || window.Weather.kind().snow) {
         pctx.clearRect(0, 0, pw, ph);
-        wet = window.Weather.drawPrecip(pctx, pw, ph, t, { density: isMobile() ? 0.6 : 1 });
+        wet = window.Weather.drawPrecip(pctx, pw, ph, now / 1000, { density: isMobile() ? 0.6 : 1 });
       }
     })(0);
   })();
@@ -404,7 +574,6 @@
   function computeInsets() {
     const mob = isMobile();
     const ins = { top: 0, right: 0, bottom: 0, left: 0 };
-    if (!mob) ins.left = navToggle.offsetWidth + 8;
     if (!win.hidden) {
       if (mob) ins.bottom = innerHeight - win.offsetTop + 6;
       else ins.right = innerWidth - win.offsetLeft + 6;
@@ -413,7 +582,8 @@
       if (mob) ins.bottom = innerHeight - cloud.offsetTop + 24;
       else ins.right = innerWidth - cloud.offsetLeft + 30;
     }
-    const cx = mob ? innerWidth / 2 : (ins.left + innerWidth - ins.right) / 2;
+    const sw = sideW();
+    const cx = mob ? innerWidth / 2 : (sw + ins.left + innerWidth - ins.right) / 2;
     html.style.setProperty('--title-x', cx + 'px');
     if (!secnav.hidden) ins.top = secnav.offsetTop + secnav.offsetHeight + 10;
     else ins.top = 70;
@@ -444,51 +614,20 @@
     if (i >= 0) activate(SECTIONS[(i + (b.dataset.sec === 'next' ? 1 : n - 1)) % n]);
   });
 
-  // ---------- Menu latéral ----------
-  const dList = $('#drawer-list');
-  ['home'].concat(SECTIONS, ['reveil']).forEach((k) => {
-    const li = document.createElement('li');
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'drawer__item'; b.dataset.go = k;
-    b.innerHTML = '<span class="drawer__ico">' + svg(ICONS[k]) + '</span><span class="drawer__txt"><strong></strong><small></small></span>';
-    b.querySelector('strong').textContent = k === 'home' ? 'Vue de la chambre' : NAMES[k];
-    b.querySelector('small').textContent = k === 'home' ? 'Revenir à la vue d\'ensemble' : TAGLINES[k];
-    b.title = k === 'home' ? '' : OBJECTS[k];
-    li.append(b); dList.append(li);
-  });
-  function markDrawer() {
-    dList.querySelectorAll('.drawer__item').forEach((b) => {
-      const on = b.dataset.go === (current || 'home');
-      b.classList.toggle('is-current', on);
-      if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+  // ---------- Barre latérale : la rubrique ouverte est mise en évidence ----------
+  const navLinks = [...document.querySelectorAll('.classic-nav a')];
+  function markNav() {
+    navLinks.forEach((a) => {
+      const on = a.dataset.k === current;
+      a.classList.toggle('is-current', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
     });
   }
-  function openDrawer() {
-    markDrawer();
-    $('#to-classic').href = '?vue=classique' + (current ? '#' + current : '');
-    html.classList.add('drawer-open');
-    drawer.inert = false;
-    navToggle.setAttribute('aria-expanded', 'true');
-    navToggle.setAttribute('aria-label', 'Fermer le menu des sections');
-    setTimeout(() => { const c = dList.querySelector('.is-current') || dList.querySelector('button'); if (c) c.focus({ preventScroll: true }); }, 60);
-  }
-  function closeDrawer(focusBack) {
-    if (!html.classList.contains('drawer-open')) return;
-    html.classList.remove('drawer-open');
-    drawer.inert = true;
-    navToggle.setAttribute('aria-expanded', 'false');
-    navToggle.setAttribute('aria-label', 'Ouvrir le menu des sections');
-    if (focusBack) navToggle.focus({ preventScroll: true });
-  }
-  navToggle.addEventListener('click', () => (html.classList.contains('drawer-open') ? closeDrawer() : openDrawer()));
-  $('#drawer-close').addEventListener('click', () => closeDrawer(true));
-  $('#drawer-backdrop').addEventListener('click', () => closeDrawer());
-  dList.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-go]');
-    if (!b) return;
-    closeDrawer();
-    if (b.dataset.go === 'home') closeAll(); else activate(b.dataset.go);
-  });
+  // Le nom en haut de la barre ramène à la vue d'ensemble de la chambre
+  const me = $('.classic-side__me');
+  if (me) me.addEventListener('click', (e) => { e.preventDefault(); if (current) closeAll(); else window.scrollTo(0, 0); });
+  // Si la fenêtre devient trop étroite pour la barre latérale, la vue classique prend le relais
+  matchMedia('(max-width: 900px)').addEventListener('change', (e) => { if (e.matches) location.reload(); });
 
   // ---------- Commandes en bas de l'écran ----------
   function setHash(k) {
@@ -521,7 +660,7 @@
 
   // Clavier : flèches pour changer de niveau dans le parcours
   document.addEventListener('keydown', (e) => {
-    if (current !== 'parcours' || e.target.matches('input, textarea')) return;
+    if (current !== 'parcours' || (e.target.matches && e.target.matches('input, textarea'))) return;
     if (e.key === 'ArrowRight') room.setLevel(lvl + 1);
     if (e.key === 'ArrowLeft') room.setLevel(lvl - 1);
   });
@@ -571,11 +710,11 @@
     const r = room.screenRect();
     let st;
     if (!isMobile() && r.width >= 560 && r.height >= 320) {
-      st = { left: r.left, top: r.top, width: r.width, height: r.height, font: Math.max(12, Math.min(16, r.width / 58)) };
+      st = { left: r.left + sideW(), top: r.top, width: r.width, height: r.height, font: Math.max(12, Math.min(16, r.width / 58)) };
       browser.classList.remove('browser--full');
     } else {
       const top = secnav.hidden ? 60 : secnav.offsetTop + secnav.offsetHeight + 10;
-      st = { left: 8, top, width: innerWidth - 16, height: innerHeight - top - 8, font: 13 };
+      st = { left: sideW() + 8, top, width: innerWidth - sideW() - 16, height: innerHeight - top - 8, font: 13 };
       browser.classList.add('browser--full');
     }
     const key = [st.left, st.top, st.width, st.height].map((v) => v.toFixed(1)).join();
@@ -594,7 +733,6 @@
   // ---------- Ouvrir / fermer une rubrique ----------
   function activate(k) {
     if (!KEYS.includes(k) || k === current) return;
-    closeDrawer();
     hideBubble();
     hint.classList.add('is-hidden');
     pinsEl.classList.add('is-hidden');
@@ -604,10 +742,10 @@
     document.body.classList.add('in-mode');
     browser.hidden = true;
     hideThought();
-    if (WINDOW_KEYS.includes(k)) { dockHtml(''); modebar.hidden = true; openWindow(k); }
+    modebar.hidden = false;      // le retour à la chambre est proposé dans toutes les rubriques
+    if (WINDOW_KEYS.includes(k)) { dockHtml(''); openWindow(k); }
     else {
       hideWindow();
-      modebar.hidden = false;
       lvl = 0; lvlItem = null;
       if (k === 'parcours') levelDock();
       else if (k === 'veille') dockHtml(VEILLE_TIP);
@@ -615,6 +753,7 @@
       if (k === 'apropos') showThought();
     }
     updateSecNav();
+    markNav();
     applyInsets();
     room.enter(k, () => { if (k === 'projets') showBrowser(); });
     setHash(k);
@@ -629,6 +768,7 @@
     modebar.hidden = true; secnav.hidden = true; sectitle.hidden = true;
     document.body.classList.remove('in-mode');
     pinsEl.classList.remove('is-hidden');
+    markNav();
     setHash(null);
     updateSwitch(null);
     applyInsets();
@@ -664,8 +804,7 @@
   $('#mode-close').addEventListener('click', closeAll);
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape' || dlg.open) return;
-    if (html.classList.contains('drawer-open')) closeDrawer(true);
-    else if (current) closeAll();
+    if (current) closeAll();
   });
   document.addEventListener('click', (e) => {
     const o = e.target.closest('[data-open]');
@@ -676,6 +815,17 @@
     const h = location.hash.slice(1);
     if (KEYS.includes(h)) activate(h); else if (!h) closeAll();
   });
+
+  // La chambre se recadre quand la barre s'ouvre ou se ferme ; si une animation est en cours, on attend qu'elle se termine
+  let sideTimer = null;
+  function relayout(tries) {
+    applyInsets();
+    if (!current) return;
+    if (room.busy && (tries || 0) < 12) { clearTimeout(sideTimer); sideTimer = setTimeout(() => relayout((tries || 0) + 1), 250); return; }
+    browser.hidden = true;
+    room.refit(() => { if (current === 'projets') showBrowser(); });
+  }
+  addEventListener('sidechange', () => { clearTimeout(sideTimer); sideTimer = setTimeout(() => relayout(0), 60); });
 
   let resizeTimer = null;
   addEventListener('resize', () => {
@@ -709,6 +859,7 @@
     if (current) return;
     clearInterval(typer); clearTimeout(hideTimer);
     bubble.hidden = false; bubbleOn = true;
+    bubble.setAttribute('aria-label', text + ' Cliquer pour ouvrir À propos.');   // le nom accessible commence par le texte affiché
     if (pinEls.apropos) pinEls.apropos.classList.add('is-hidden');
     room.setWaving(!autoHide);
     if (reduceMotion) bubbleText.textContent = text;
@@ -725,10 +876,19 @@
   }
   bubble.addEventListener('click', () => activate('apropos'));
   bubble.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate('apropos'); } });
-  bubble.setAttribute('aria-label', 'Baptiste dit bonjour : cliquer pour ouvrir À propos');
 
   // ---------- Suivi des éléments posés sur la scène pendant le rendu ----------
+  // Ordinateur qui peine (moins de 28 images/s pendant 3 s de suite) : on supprime les flous et les ombres coûteux
+  let fpsN = 0, fpsT = performance.now(), slowRuns = 0;
+  document.addEventListener('visibilitychange', () => { fpsN = 0; fpsT = performance.now(); slowRuns = 0; });
   room.onFrame = () => {
+    fpsN++;
+    const nowT = performance.now();
+    if (nowT - fpsT >= 1500) {
+      const fps = fpsN * 1000 / (nowT - fpsT); fpsN = 0; fpsT = nowT;
+      if (!document.hidden && fps < 28) slowRuns++; else slowRuns = 0;
+      if (slowRuns >= 2 && !html.classList.contains('lite')) html.classList.add('lite');
+    }
     if (!current) {
       for (const key in pinEls) {
         const p = room.pinPosition(key);
@@ -741,7 +901,7 @@
       const h = room.project(room.headPosition());
       // La bulle grandit pendant que le texte s'écrit : on la garde dans l'écran avec sa largeur maximale
       const bw = isMobile() ? 190 : 240;
-      const bx = Math.max(8, Math.min(innerWidth - bw - 12, h.x + 56));
+      const bx = Math.max(sideW() + 8, Math.min(innerWidth - bw - 12, h.x + sideW() + 56));
       bubble.style.transform = 'translate(' + bx.toFixed(1) + 'px,' + (h.y + 70).toFixed(1) + 'px)';
     }
     if (!browser.hidden && current === 'projets') placeBrowser();

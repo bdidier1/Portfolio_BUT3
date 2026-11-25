@@ -1,3 +1,10 @@
+/* Police Ubuntu (licence libre Ubuntu Font Licence), hébergée sur le site : aucune requête vers un serveur externe.
+   Les chemins sont relatifs à index.html, car le CSS y est intégré à la construction. */
+@font-face { font-family: "Ubuntu"; font-style: italic; font-weight: 400; font-display: swap; src: url(fonts/ubuntu-400-italic.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Ubuntu"; font-style: normal; font-weight: 400; font-display: swap; src: url(fonts/ubuntu-400.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Ubuntu"; font-style: normal; font-weight: 500; font-display: swap; src: url(fonts/ubuntu-500.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Ubuntu"; font-style: normal; font-weight: 700; font-display: swap; src: url(fonts/ubuntu-700.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 /* =====================================================================
    Vue classique : même contenu que la chambre 3D, présenté simplement.
    Style iOS / Apple : police système d'Apple, fonds groupés, coins arrondis,
@@ -6,10 +13,21 @@
    (police mono pour les dates et les technologies).
    ===================================================================== */
 .classic-side, .classic-note { display: none; }
+/* La barre latérale est la même dans la vue classique et dans la vue 3D : elle porte ses propres couleurs */
+.classic-side {
+  --ios-font: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; --ios-mono: var(--ios-font);
+  --label: #ffffff; --text: #d4d8df; --label2: #8b93a1; --key: #9cdcfe; --tint: #3fb950; --tint-press: #56d364;
+  --fill: rgba(255, 255, 255, .06); --fill2: rgba(255, 255, 255, .04); --sep: #1f2937; --card: #0b0f16; --side: rgba(7, 10, 15, .92); --bar: rgba(11, 15, 22, .88);
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  font-family: var(--ios-font); font-size: 16px; line-height: 1.55; letter-spacing: -.01em; -webkit-font-smoothing: antialiased;
+}
+/* Les champs de formulaire, boutons et extraits de code ne reprennent pas la police du texte par défaut */
+.classic button, .classic input, .classic textarea, .classic select, .classic code, .classic kbd, .classic pre, .classic samp { font-family: inherit; }
 
 html.classic {
-  --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Segoe UI", system-ui, Roboto, Arial, sans-serif;
-  --ios-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "JetBrains Mono", monospace;
+  /* Ubuntu partout : texte, titres, dates, étiquettes, menu et formulaire */
+  --ios-font: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ios-mono: var(--ios-font);
   /* Couleurs de la chambre 3D */
   --bg: #05070b; --card: #0b0f16; --card2: #080b11; --fill: rgba(255, 255, 255, .06); --fill2: rgba(255, 255, 255, .04);
   --sep: #1f2937; --label: #ffffff; --text: #d4d8df; --label2: #8b93a1; --label3: #4a5160;
@@ -36,60 +54,49 @@ html.classic, .classic body { height: auto; }
 .classic sup { line-height: 0; }
 
 /* ---------- Barre latérale (grand écran) ---------- */
-.classic .classic-side {
+:is(.classic, .mode-3d) .classic-side {
   position: fixed; top: 0; left: 0; bottom: 0; z-index: 20; width: 280px; display: flex; flex-direction: column; gap: 20px;
   padding: calc(24px + var(--safe-t)) 14px 18px; overflow-y: auto; background: var(--side); border-right: 1px solid var(--sep);
   -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
 }
-.classic .classic-side__me { display: flex; align-items: center; gap: 12px; padding: 0 8px; color: var(--label); text-decoration: none; }
-.classic .classic-side__me img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: center 20%; }
-.classic .classic-side__me span { display: grid; line-height: 1.3; }
-.classic .classic-side__me strong { font-size: 17px; font-weight: 600; }
-.classic .classic-side__me small { font-size: 13px; color: var(--label2); }
-.classic .classic-burger { display: none; }
-.classic .classic-side__menu { display: flex; flex-direction: column; gap: 20px; flex: 1; min-height: 0; }
-.classic .classic-nav { display: grid; gap: 2px; }
-.classic .classic-nav a {
+:is(.classic, .mode-3d) .classic-side__me { display: flex; align-items: center; gap: 12px; padding: 0 8px; color: var(--label); text-decoration: none; }
+:is(.classic, .mode-3d) .classic-side__me img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: center 20%; }
+:is(.classic, .mode-3d) .classic-side__me span { display: grid; line-height: 1.3; }
+:is(.classic, .mode-3d) .classic-side__me strong { font-size: 17px; font-weight: 600; }
+:is(.classic, .mode-3d) .classic-side__me small { font-size: 13px; color: var(--label2); }
+:is(.classic, .mode-3d) .classic-burger { display: none; }
+:is(.classic, .mode-3d) .classic-side__menu { display: flex; flex-direction: column; gap: 20px; flex: 1; min-height: 0; }
+:is(.classic, .mode-3d) .classic-nav { display: grid; gap: 2px; }
+:is(.classic, .mode-3d) .classic-nav a {
   display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 6px 10px; border-radius: 10px;
   color: var(--label); font-size: 16px; font-weight: 500; text-decoration: none; transition: background-color 150ms var(--ease);
 }
-.classic .classic-nav a:hover { background: var(--fill2); text-decoration: none; }
-.classic .classic-nav a.is-current { background: var(--tint); color: #fff; }
-.classic .ico { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: #fff; background: #8e8e93; }
-.classic .ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.classic .ico--apropos { background: #007aff; }
-.classic .ico--projets { background: #ff9500; }
-.classic .ico--competences { background: #af52de; }
-.classic .ico--parcours { background: #34c759; }
-.classic .ico--veille { background: #5856d6; }
-.classic .ico--cv { background: #8e8e93; }
-.classic .ico--contact { background: #30b0c7; }
-.classic .classic-side__foot { margin-top: auto; display: grid; gap: 4px; padding: 0 8px; font-size: 14px; }
-.classic .classic-side__foot a { color: var(--tint); overflow-wrap: anywhere; padding: 4px 0; }
-.classic .classic-side__cv {
+:is(.classic, .mode-3d) .classic-nav a:hover { background: var(--fill2); text-decoration: none; }
+:is(.classic, .mode-3d) .classic-nav a.is-current { background: var(--tint); color: #fff; }
+:is(.classic, .mode-3d) .ico { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: #fff; background: #8e8e93; }
+:is(.classic, .mode-3d) .ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+:is(.classic, .mode-3d) .ico--apropos { background: #007aff; }
+:is(.classic, .mode-3d) .ico--projets { background: #ff9500; }
+:is(.classic, .mode-3d) .ico--competences { background: #af52de; }
+:is(.classic, .mode-3d) .ico--parcours { background: #34c759; }
+:is(.classic, .mode-3d) .ico--veille { background: #5856d6; }
+:is(.classic, .mode-3d) .ico--cv { background: #8e8e93; }
+:is(.classic, .mode-3d) .ico--contact { background: #30b0c7; }
+:is(.classic, .mode-3d) .classic-side__foot { margin-top: auto; display: grid; gap: 4px; padding: 0 8px; font-size: 14px; }
+:is(.classic, .mode-3d) .classic-side__foot a { color: var(--tint); overflow-wrap: anywhere; padding: 4px 0; }
+:is(.classic, .mode-3d) .classic-side__cv {
   display: grid; place-items: center; min-height: 44px; margin-bottom: 6px; border-radius: 12px;
   background: var(--tint); color: #fff !important; font-weight: 600; font-size: 15px;
 }
-.classic .classic-side__cv:hover { background: var(--tint-press); text-decoration: none; }
+:is(.classic, .mode-3d) .classic-side__cv:hover { background: var(--tint-press); text-decoration: none; }
 
 /* ---------- Bouton « Vue 3D » en haut à droite ---------- */
-.classic .topright { position: fixed; top: calc(16px + var(--safe-t)); right: 20px; z-index: 30; }
-.classic .modeswitch {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: 18px;
-  font-family: var(--ios-font); font-size: 15px; font-weight: 600; color: var(--tint); letter-spacing: -.01em;
-  background: var(--bar); border: 1px solid var(--sep); box-shadow: var(--shadow);
-  -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
-}
-.classic .modeswitch:hover { color: var(--tint-press); text-decoration: none; border-color: var(--sep); }
-.classic .modeswitch svg { width: 17px; height: 17px; }
-.classic .modeswitch span { position: static; width: auto; height: auto; clip: auto; overflow: visible; }
 
 /* Affichage immédiat : la vue classique est visible dès le HTML, avant que le JavaScript ne s'exécute */
 .classic .loader, .classic #scene, .classic #sky, .classic #precip, .classic #pins, .classic #bubble, .classic #hint,
 .classic #thought, .classic #modebar, .classic #secnav, .classic #sectitle, .classic #dock, .classic #browser,
 .classic #nav-toggle, .classic #drawer, .classic #drawer-backdrop, .classic #title, .classic .window__bar { display: none !important; }
 .classic .window[hidden] { display: block; }
-.classic .modeswitch:not([data-ready]) { visibility: hidden; }
 /* Les rubriques hors de l'écran ne sont calculées qu'à l'approche : chargement plus rapide sur téléphone */
 .classic .panel:not(#p-apropos) { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
 
@@ -102,7 +109,7 @@ html.classic, .classic body { height: auto; }
 }
 @keyframes note-out { to { opacity: 0; visibility: hidden; } }
 .classic .window {
-  position: static; display: block; width: auto; height: auto; max-width: none; margin: 0 0 0 280px; padding: calc(72px + var(--safe-t)) 32px 64px;
+  position: static; display: block; width: auto; height: auto; max-width: none; margin: 0 0 0 var(--side-w, 280px); padding: calc(72px + var(--safe-t)) 32px 64px;
   background: transparent; border: 0; border-radius: 0; box-shadow: none; animation: none;
 }
 .classic .window__body { max-width: 860px; margin: 0 auto; padding: 0; overflow: visible; }
@@ -284,33 +291,30 @@ html.classic, .classic body { height: auto; }
 
 /* ---------- Tablettes et téléphones : barre du haut + menu ---------- */
 @media (max-width: 900px) {
-  .classic .classic-side {
+  :is(.classic, .mode-3d) .classic-side {
     position: sticky; top: 0; bottom: auto; width: auto; height: auto; flex-direction: row; align-items: center; justify-content: space-between;
     gap: 10px; padding: 8px 12px 8px 16px; padding-top: calc(8px + var(--safe-t)); overflow: visible;
     background: var(--bar); border-right: 0; border-bottom: 1px solid var(--sep);
   }
-  .classic .classic-side__me img { width: 34px; height: 34px; }
-  .classic .classic-side__me small { display: none; }
-  .classic .classic-side__me strong { font-size: 17px; }
-  .classic .classic-burger {
+  :is(.classic, .mode-3d) .classic-side__me img { width: 34px; height: 34px; }
+  :is(.classic, .mode-3d) .classic-side__me small { display: none; }
+  :is(.classic, .mode-3d) .classic-side__me strong { font-size: 17px; }
+  :is(.classic, .mode-3d) .classic-burger {
     display: grid; align-content: center; gap: 4px; width: 40px; height: 40px; padding: 0 10px; flex: none; cursor: pointer;
     background: var(--fill); border: 0; border-radius: 10px;
   }
   .classic-burger span { display: block; height: 2px; border-radius: 2px; background: var(--label); transition: transform .25s var(--ease), opacity .2s; }
-  .classic .is-open .classic-burger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-  .classic .is-open .classic-burger span:nth-child(2) { opacity: 0; }
-  .classic .is-open .classic-burger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-  .classic .classic-side__menu {
+  :is(.classic, .mode-3d) .is-open .classic-burger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  :is(.classic, .mode-3d) .is-open .classic-burger span:nth-child(2) { opacity: 0; }
+  :is(.classic, .mode-3d) .is-open .classic-burger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  :is(.classic, .mode-3d) .classic-side__menu {
     display: none; position: absolute; left: 10px; right: 10px; top: calc(100% + 8px); gap: 12px; padding: 10px; flex: none;
     background: var(--card); border-radius: 16px; box-shadow: 0 16px 48px rgba(0, 0, 0, .22);
     max-height: calc(100dvh - 90px); overflow-y: auto;
   }
-  .classic .is-open .classic-side__menu { display: flex; animation: menu-in .22s var(--ease); }
+  :is(.classic, .mode-3d) .is-open .classic-side__menu { display: flex; animation: menu-in .22s var(--ease); }
   @keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
-  .classic .classic-side__foot { margin-top: 0; padding: 10px 8px 4px; border-top: 1px solid var(--sep); }
-  .classic .topright { top: calc(10px + var(--safe-t)); right: 60px; }
-  .classic .modeswitch { width: 40px; min-height: 40px; padding: 0; justify-content: center; border-radius: 10px; box-shadow: none; background: var(--fill); border: 0; }
-  .classic .modeswitch span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  :is(.classic, .mode-3d) .classic-side__foot { margin-top: 0; padding: 10px 8px 4px; border-top: 1px solid var(--sep); }
   .classic .window { margin: 0; padding: 16px 12px 48px; }
   .classic .classic-note:not([hidden]) { bottom: 12px; }
   .classic .panel { padding: 22px 18px 18px; border-radius: 18px; scroll-margin-top: 72px; }
@@ -324,7 +328,7 @@ html.classic, .classic body { height: auto; }
   .classic .skill__txt strong { font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .classic .pmodal[open], .classic .is-open .classic-side__menu { animation: none; }
+  .classic .pmodal[open], :is(.classic, .mode-3d) .is-open .classic-side__menu { animation: none; }
   .classic .ptile, .classic .btn { transition: none; }
 }
 
@@ -346,17 +350,15 @@ html.classic, .classic body { height: auto; }
 .classic :focus-visible { outline-color: rgba(55, 148, 255, .7); }
 
 /* Menu : colonne d'explorateur sombre, icônes façon réglages iOS */
-.classic .classic-side { background: var(--side); border-right-color: var(--sep); }
-.classic .classic-side__me img { box-shadow: 0 0 0 2px var(--tint); }
-.classic .classic-side__me small { font-family: var(--ios-mono); font-size: 12px; color: var(--label2); }
-.classic .classic-nav a { color: var(--text); }
-.classic .classic-nav a:hover { background: var(--fill); }
-.classic .classic-nav a.is-current { background: rgba(63, 185, 80, .14); color: #fff; box-shadow: inset 2px 0 0 var(--tint); }
-.classic .classic-side__foot a { color: var(--key); }
-.classic .classic-side__cv { background: transparent; color: var(--tint) !important; border: 1px solid var(--tint); }
-.classic .classic-side__cv:hover { background: rgba(63, 185, 80, .12); }
-.classic .modeswitch { background: var(--bar); border-color: var(--sep); color: #fff; box-shadow: none; }
-.classic .modeswitch:hover { color: var(--tint); border-color: var(--tint); }
+:is(.classic, .mode-3d) .classic-side { background: var(--side); border-right-color: var(--sep); }
+:is(.classic, .mode-3d) .classic-side__me img { box-shadow: 0 0 0 2px var(--tint); }
+:is(.classic, .mode-3d) .classic-side__me small { font-family: var(--ios-mono); font-size: 12px; color: var(--label2); }
+:is(.classic, .mode-3d) .classic-nav a { color: var(--text); }
+:is(.classic, .mode-3d) .classic-nav a:hover { background: var(--fill); }
+:is(.classic, .mode-3d) .classic-nav a.is-current { background: rgba(63, 185, 80, .14); color: #fff; box-shadow: inset 2px 0 0 var(--tint); }
+:is(.classic, .mode-3d) .classic-side__foot a { color: var(--key); }
+:is(.classic, .mode-3d) .classic-side__cv { background: transparent; color: var(--tint) !important; border: 1px solid var(--tint); }
+:is(.classic, .mode-3d) .classic-side__cv:hover { background: rgba(63, 185, 80, .12); }
 
 /* Sections : panneaux de l'éditeur, titres précédés d'un « # » en mono */
 .classic .panel { background: var(--card); border: 1px solid var(--sep); box-shadow: var(--shadow); }
@@ -434,10 +436,9 @@ html.classic, .classic body { height: auto; }
 
 /* Barre du haut sur mobile */
 @media (max-width: 900px) {
-  .classic .classic-side { background: var(--bar); border-bottom-color: var(--sep); }
-  .classic .classic-side__menu { background: var(--card); box-shadow: 0 0 0 1px var(--sep), 0 20px 50px rgba(0, 0, 0, .6); }
-  .classic .classic-burger { background: var(--fill); }
-  .classic .modeswitch { background: var(--fill); }
+  :is(.classic, .mode-3d) .classic-side { background: var(--bar); border-bottom-color: var(--sep); }
+  :is(.classic, .mode-3d) .classic-side__menu { background: var(--card); box-shadow: 0 0 0 1px var(--sep), 0 20px 50px rgba(0, 0, 0, .6); }
+  :is(.classic, .mode-3d) .classic-burger { background: var(--fill); }
 }
 
 /* ---------- Autres projets : liste compacte sous les cadres ---------- */
@@ -485,3 +486,50 @@ html.classic, .classic body { height: auto; }
 .classic #scene, .classic #sky, .classic #precip, .classic #pins, .classic #bubble, .classic #hint, .classic #thought,
 .classic #modebar, .classic #secnav, .classic #sectitle, .classic #dock, .classic #browser, .classic #nav-toggle,
 .classic #drawer, .classic #drawer-backdrop, .classic #title, .classic .window__bar { display: none !important; }
+
+/* ---------- Barre latérale : languette au milieu du bord, pour l'ouvrir ou la fermer (grand écran) ---------- */
+/* Même languette que l'ancien menu de la vue 3D : collée au bord de la barre, centrée en hauteur, flèche qui se retourne */
+.side-tab {
+  position: fixed; top: 50%; left: var(--side-w, 280px); transform: translateY(-50%); z-index: 56;
+  width: 44px; height: 68px; display: grid; place-items: center; padding: 0; cursor: pointer; color: #fff;
+  background: #0b0f16e6; border: 1px solid #2a3340; border-left: 0; border-radius: 0 14px 14px 0;
+  box-shadow: 6px 0 24px #0006; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  transition: background .15s, width .15s, color .15s, left .26s cubic-bezier(.22, 1, .36, 1);
+}
+.side-tab:hover { background: #10261a; color: #3fb950; width: 50px; }
+.side-tab:focus-visible { outline: 3px solid #3fb950; outline-offset: 2px; }
+.side-tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .3s; }
+html.side-closed .side-tab svg { transform: rotate(180deg); }
+@media (max-width: 900px) { .side-tab { display: none !important; } }
+@media (min-width: 901px) {
+  :is(.classic, .mode-3d) .classic-side { transition: transform .26s cubic-bezier(.22, 1, .36, 1), visibility 0s; }
+  html.side-closed { --side-w: 0px; }
+  html.side-closed .classic-side { transform: translateX(-102%); visibility: hidden; transition: transform .26s cubic-bezier(.22, 1, .36, 1), visibility 0s .26s; }
+  .classic .window { transition: margin-left .26s cubic-bezier(.22, 1, .36, 1); }
+}
+@media (prefers-reduced-motion: reduce) { :is(.classic, .mode-3d) .classic-side, .classic .window, .side-tab, .side-tab svg { transition: none !important; } }
+
+/* Réseaux : de simples icônes dessinées comme des caractères, de la couleur du texte, sans fond */
+.soc { flex: none; width: 22px; height: 22px; display: grid; place-items: center; color: inherit; background: none; }
+.soc svg { width: 22px; height: 22px; fill: currentColor; }
+.soc svg .ln { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+:is(.classic, .mode-3d) .classic-side__foot a { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 4px 0; color: var(--key); }
+:is(.classic, .mode-3d) .classic-side__foot a.classic-side__cv { justify-content: center; }
+
+/* ---------- Bouton « Vue 3D » / « Vue classique » en haut à droite (style d'origine) ---------- */
+.classic .topright { position: fixed; top: calc(16px + var(--safe-t)); right: 20px; z-index: 30; }
+.classic .modeswitch {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: 18px;
+  font-family: var(--ios-font); font-size: 15px; font-weight: 600; letter-spacing: -.01em;
+  background: var(--bar); border: 1px solid var(--sep); color: #fff; box-shadow: none;
+  -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+}
+.classic .modeswitch:hover { color: var(--tint); border-color: var(--tint); text-decoration: none; }
+.classic .modeswitch svg { width: 17px; height: 17px; }
+.classic .modeswitch span { position: static; width: auto; height: auto; clip: auto; overflow: visible; }
+.classic .modeswitch:not([data-ready]) { visibility: hidden; }
+@media (max-width: 900px) {
+  .classic .topright { top: calc(10px + var(--safe-t)); right: 60px; }
+  .classic .modeswitch { width: 40px; min-height: 40px; padding: 0; justify-content: center; border-radius: 10px; box-shadow: none; background: var(--fill); border: 0; }
+  .classic .modeswitch span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}

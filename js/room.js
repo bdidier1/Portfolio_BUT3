@@ -3,7 +3,7 @@
   'use strict';
   const T = THREE;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const FONT = '"JetBrains Mono", Consolas, monospace';
+  const FONT = '"Ubuntu", system-ui, sans-serif';
 
   let seed = 11;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -769,6 +769,8 @@
 
     // Fenêtre : le ciel est celui de Belfort en ce moment
     const sky = canvasTexture(256, 256, () => {});
+    const winSky = Weather.createSky(sky.canvas, { small: true });   // ciel mis en mémoire : les nuages sont seulement déplacés
+    winSky.resize(sky.w, sky.h);
     const win = new T.Group(); win.position.set(-2.96, 1.7, 1.2); win.rotation.y = Math.PI / 2; room.add(win);
     box(win, 1.0, 1.2, 0.05, 0x0b0f16, 0, 0, 0);
     const wf = new T.Mesh(new T.PlaneGeometry(0.88, 1.08), new T.MeshBasicMaterial({ map: sky.tex })); wf.position.z = 0.03; win.add(wf);
@@ -784,13 +786,73 @@
     box(plant, 0.3, 0.3, 0.3, 0xc0603a, 0, 0.15, 0);
     [[0, 0.5, 0, 0.3], [0.1, 0.62, 0.05, 0.22], [-0.1, 0.58, -0.06, 0.24]].forEach(([x, y, z, s]) => box(plant, s, s, s, 0x2f9e4f, x, y, z));
 
-    const ballTex = canvasTexture(128, 64, (c, w, h) => {
-      c.fillStyle = '#f5f5f5'; c.fillRect(0, 0, w, h); c.fillStyle = '#111';
-      for (let i = 0; i < 9; i++) { c.beginPath(); c.arc(rnd() * w, rnd() * h, 7 + rnd() * 4, 0, 7); c.fill(); }
-    });
+    // Ballon de foot : un icosaèdre tronqué (12 pentagones noirs, 20 hexagones blancs) gonflé en sphère.
+    // Les pièces sont posées une à une sur la sphère, avec une couture foncée et douce sur leurs bords ;
+    // les normales sont celles d'une sphère, donc l'éclairage est lisse (pas de facettes).
+    function footballGeometry(r) {
+      const t = (1 + Math.sqrt(5)) / 2;
+      const V = [[-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0], [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t], [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]]
+        .map((v) => new T.Vector3(v[0], v[1], v[2]));
+      const F = [[0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11], [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
+        [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9], [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1]];
+      const third = (a, b) => V[a].clone().lerp(V[b], 1 / 3);
+      const panels = [];
+      // Un hexagone par face de l'icosaèdre, un pentagone autour de chaque sommet
+      F.forEach((f) => panels.push({ black: false, pts: [third(f[0], f[1]), third(f[1], f[0]), third(f[1], f[2]), third(f[2], f[1]), third(f[2], f[0]), third(f[0], f[2])] }));
+      V.forEach((v, i) => {
+        const pts = [];
+        F.filter((f) => f.includes(i)).forEach((f) => f.filter((k) => k !== i).forEach((k) => {
+          const p = third(i, k); if (!pts.some((q) => q.distanceTo(p) < 1e-6)) pts.push(p);
+        }));
+        const n = v.clone().normalize(), u = pts[0].clone().sub(v).normalize(), w = n.clone().cross(u);
+        const ang = (p) => Math.atan2(p.clone().sub(v).dot(w), p.clone().sub(v).dot(u));
+        pts.sort((p, q) => ang(p) - ang(q));
+        panels.push({ black: true, pts });
+      });
+
+      const white = new T.Color(0xf6f6f3), black = new T.Color(0x14161a), seam = new T.Color(0x23262c);
+      const N = 6, pos = [], nor = [], col = [], tmp = new T.Color();
+      const onSphere = (p) => p.clone().normalize().multiplyScalar(r);
+      panels.forEach((pn) => {
+        const c = pn.pts.reduce((m, p) => m.add(p), new T.Vector3()).multiplyScalar(1 / pn.pts.length);
+        const ring = pn.pts.map((p) => c.clone().lerp(p, 0.965));       // petit écart entre les pièces
+        const base = pn.black ? black : white;
+        ring.forEach((p, k) => {
+          const q = ring[(k + 1) % ring.length];
+          // Triangle (centre, p, q) découpé en petits triangles, chaque sommet reçoit sa couleur
+          const P = (i, j) => c.clone().add(p.clone().sub(c).multiplyScalar(i / N)).add(q.clone().sub(c).multiplyScalar(j / N));
+          const push = (i, j, flip) => {
+            const s = onSphere(P(i, j)), edge = Math.max(0, 1 - (1 - (i + j) / N) / 0.26);   // 1 sur le bord de la pièce, 0 au-delà
+            tmp.copy(base).lerp(seam, 0.85 * edge * edge * (3 - 2 * edge));
+            pos.push(s.x, s.y, s.z); nor.push(s.x / r, s.y / r, s.z / r); col.push(tmp.r, tmp.g, tmp.b);
+          };
+          const tri = (A, B, C) => {
+            // Triangle toujours tourné vers l'extérieur, quel que soit le sens de parcours de la pièce
+            const a = onSphere(P(A[0], A[1])), b = onSphere(P(B[0], B[1])), d = onSphere(P(C[0], C[1]));
+            const out = b.clone().sub(a).cross(d.clone().sub(a)).dot(a) >= 0;
+            (out ? [A, B, C] : [A, C, B]).forEach((v) => push(v[0], v[1]));
+          };
+          for (let i = 0; i < N; i++) for (let j = 0; j < N - i; j++) {
+            tri([i, j], [i + 1, j], [i, j + 1]);
+            if (j < N - i - 1) tri([i + 1, j], [i + 1, j + 1], [i, j + 1]);
+          }
+        });
+      });
+      const g = new T.BufferGeometry();
+      g.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
+      g.setAttribute('normal', new T.Float32BufferAttribute(nor, 3));
+      g.setAttribute('color', new T.Float32BufferAttribute(col, 3));
+      return g;
+    }
     const ballG = new T.Group(); ballG.position.set(1.6, 0.14, 0.95); room.add(ballG);
-    const ball = new T.Mesh(new T.SphereGeometry(0.14, 20, 14), mat(0xffffff, { map: ballTex.tex }));
-    ball.castShadow = true; ballG.add(ball);
+    const ballTilt = new T.Group(); ballTilt.rotation.set(0.5, 0, 0.35); ballG.add(ballTilt);   // axe de rotation incliné
+    const ball = new T.Group(); ballTilt.add(ball);                                              // tourne sur lui-même
+    const ballSkin = new T.MeshPhongMaterial({ vertexColors: true, shininess: 24, specular: 0x2c2c2c });
+    ballSkin.userData.glow = true;      // pas de lueur au survol : elle grisonnerait les pentagones noirs
+    const ballShell = new T.Mesh(footballGeometry(0.14), ballSkin);
+    ballShell.castShadow = true; ball.add(ballShell);
+    const ballCore = new T.Mesh(new T.SphereGeometry(0.1385, 24, 16), new T.MeshLambertMaterial({ color: 0x23262c }));
+    ballCore.userData.glow = false; ball.add(ballCore);                                          // visible dans les écarts entre pièces
     register(ballG, 'apropos');
 
     // ---------- Étiquettes ----------
@@ -884,7 +946,7 @@
     const easeOut = (t) => 1 - Math.pow(1 - t, 3);
     function flyTo(pos, target, dur, done, opts) {
       opts = opts || {};
-      tween = { t: 0, dur: reduceMotion ? 0.01 : dur, p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target, done, via: opts.via || null, ease: opts.ease || ease };
+      tween = { t: 0, start: performance.now(), dur: reduceMotion ? 0.01 : dur, p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target, done, via: opts.via || null, ease: opts.ease || ease };
       controls.enabled = false;
       springAt = Infinity;
       openLimits();
@@ -914,7 +976,7 @@
       const p = levelPose(level);
       const via = camera.position.clone().lerp(p.pos, 0.5);
       via.y += Math.min(6, camera.position.distanceTo(p.pos) * 0.18);
-      flyTo(p.pos, p.target, 1.0, null, { via });
+      flyTo(p.pos, p.target, 0.7, null, { via });
       if (handlers.onLevel) handlers.onLevel(level, TIMELINE.length, level ? TIMELINE[level - 1] : null);
     }
 
@@ -980,7 +1042,7 @@
     const warp = document.createElement('div');
     warp.className = 'warp'; warp.setAttribute('aria-hidden', 'true');
     container.appendChild(warp);
-    const WARP_MS = reduceMotion ? 0 : 420;
+    const WARP_MS = reduceMotion ? 0 : 240;
     let seq = 0;
     function laptopView(dist) {
       bed.updateMatrixWorld(true);
@@ -999,7 +1061,7 @@
     function toSky(dest, finish, my) {
       busy = true; holdLimits = true; transit(true);
       const lv = laptopView(0.32);
-      flyTo(lv.pos, lv.target, 1.05, () => {
+      flyTo(lv.pos, lv.target, 0.5, () => {
         if (my !== seq) return;
         warp.classList.add('is-on');
         setTimeout(() => {
@@ -1013,7 +1075,7 @@
           puffs.forEach((p) => { p.s = 1; });
           cloudsT = 1;
           warp.classList.remove('is-on');
-          flyTo(dest.pos, dest.target, 2.6, () => { cloudsT = 0; busy = false; holdLimits = false; applyLimits(); transit(false); finish(); }, { via, ease: easeOut });
+          flyTo(dest.pos, dest.target, 1.1, () => { cloudsT = 0; busy = false; holdLimits = false; applyLimits(); transit(false); finish(); }, { via, ease: easeOut });
         }, WARP_MS);
       }, { ease: easeIn });
     }
@@ -1022,7 +1084,7 @@
       const up = camera.position.clone().add(V(4, 16, 10));
       puffsAlong(camera.position.clone().add(V(0, 5, 3)), up, 8);
       cloudsT = 1;
-      flyTo(up, controls.target.clone().add(V(0, 6, 0)), 0.9, () => {
+      flyTo(up, controls.target.clone().add(V(0, 6, 0)), 0.5, () => {
         if (my !== seq) return;
         warp.classList.add('is-on');
         setTimeout(() => {
@@ -1032,7 +1094,7 @@
           const lv = laptopView(0.32);
           camera.position.copy(lv.pos); controls.target.copy(lv.target);
           warp.classList.remove('is-on');
-          flyTo(dest.pos, dest.target, 1.5, () => { busy = false; holdLimits = false; applyLimits(); transit(false); finish(); }, { ease: easeOut });
+          flyTo(dest.pos, dest.target, 0.8, () => { busy = false; holdLimits = false; applyLimits(); transit(false); finish(); }, { ease: easeOut });
         }, WARP_MS);
       }, { ease: easeIn });
     }
@@ -1056,7 +1118,7 @@
       const finish = () => { if (my !== seq) return; if (done) done(); };
       if (key === 'parcours' && !(was === 'parcours' && inSky)) toSky(p, finish, my);
       else if (key !== 'parcours' && world.visible && !room.visible) fromSky(p, finish, my);
-      else flyTo(p.pos, p.target, 1.3, finish);
+      else flyTo(p.pos, p.target, 0.75, finish);
     }
     function exit(done) {
       const was = api.mode;
@@ -1066,7 +1128,7 @@
       const s = saved || { pos: HOME_POS.clone(), target: HOME_TARGET.clone() };
       saved = null;
       const finish = () => { if (my !== seq) return; if (done) done(); };
-      if (world.visible && !room.visible) fromSky(s, finish, my); else flyTo(s.pos, s.target, 1.2, finish);
+      if (world.visible && !room.visible) fromSky(s, finish, my); else flyTo(s.pos, s.target, 0.7, finish);
     }
     // Recadrage après un changement de taille d'écran ou de la zone libre
     function refit(done) {
@@ -1152,7 +1214,7 @@
         const end = camera.position.clone();
         camera.position.set(-5, 6.5, 8.5);
         controls.update();
-        flyTo(end, controls.target.clone(), 2.6, done);
+        flyTo(end, controls.target.clone(), 1.8, done);
       },
       headPosition() { head.getWorldPosition(headWorld); return headWorld.clone().add(new T.Vector3(0.0, 0.42, 0)); },
       project(v) {
@@ -1173,7 +1235,7 @@
       const t = clock3.elapsedTime;
 
       if (tween) {
-        tween.t += dt / tween.dur;
+        tween.t = (performance.now() - tween.start) / (tween.dur * 1000);   // heure réelle : durée constante, même à 10 images/s
         const k = tween.ease(Math.min(tween.t, 1));
         if (tween.via) {
           // courbe de Bézier quadratique : départ -> point de passage -> arrivée
@@ -1279,7 +1341,7 @@
       // ciel de la fenêtre (météo réelle)
       if (room.visible && t - lastSky > 0.04) {
         lastSky = t;
-        Weather.drawSky(sky.ctx, sky.w, sky.h, t, { small: true });
+        winSky.frame(t * 1000);
         sky.tex.needsUpdate = true;
       }
       if (t - lastSlow > 1) { lastSlow = t; applyWeather(); }

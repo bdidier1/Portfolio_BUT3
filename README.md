@@ -21,9 +21,15 @@ Le contenu suit les attentes du cours « Portfolio – book » :
 Site statique codé à la main : HTML, CSS et JavaScript, hébergé sur GitHub Pages. Deux vues, avec un bouton en haut à droite pour passer de l'une à l'autre :
 
 - **Chambre 3D** (Three.js, fichiers dans `js/vendor/`, sans CDN) : chaque objet ouvre une rubrique.
-- **Vue classique** (`?vue=classique`) : le même contenu sur une page simple, au style iOS (police système d'Apple, thème clair ou sombre automatique).
+- **Vue classique** (`?vue=classique`) : le même contenu sur une seule page à faire défiler.
 
-`js/boot.js` choisit la vue au démarrage : la vue classique est **toujours utilisée sur téléphone** (plus simple à lire), et s'affiche d'office si la connexion est lente (mode économie de données, 2G), si l'appareil est très modeste, si WebGL est absent ou calculé sans carte graphique ; la 3D (≈ 1 Mo) n'est alors pas téléchargée. Les projets se filtrent par catégorie (stages, universitaires, personnels, automatisation) et s'ouvrent dans une fiche au premier plan. La vue classique s'affiche dès la lecture du HTML, sans écran de chargement : le CSS et le script de démarrage sont intégrés à la page. Une politique de sécurité du contenu (CSP) limite les scripts au site lui-même et au script de démarrage, identifié par son empreinte SHA-256. Le formulaire de contact passe par FormSubmit.
+Les deux vues partagent **la même barre de navigation**, à gauche : mon nom, les sept rubriques, le CV à télécharger et mes liens avec leurs logos (GitHub, LinkedIn, e-mail), dessinés comme des caractères, de la couleur du texte. Une **languette au milieu de son bord** l'ouvre ou la ferme quand on veut (la flèche se retourne), et l'état est retenu d'une visite à l'autre. En 3D, un clic sur une rubrique emmène la caméra jusqu'à l'objet correspondant ; dans la vue classique, il fait défiler la page. Sur petit écran, la barre devient un menu burger en haut de page. **En haut à droite** : le bouton « Vue 3D » / « Vue classique » et, dans la chambre, « Revenir à la chambre ».
+
+**Police : Ubuntu partout**, dans les deux vues, y compris sur les textures dessinées dans la chambre 3D. Les quatre fichiers (400, 500, 700 et italique, 47 Ko au total, réduits aux caractères utilisés) sont dans `fonts/` : aucune requête vers un serveur de polices externe.
+
+**Images des projets** : chaque image d'une fiche est cliquable (ou activable au clavier) et s'ouvre en grand dans une visionneuse. Zoom à la molette, aux boutons + et −, par double clic ou double toucher, ou en pinçant ; on déplace l'image en la faisant glisser ; flèches ou boutons pour passer d'une image à l'autre ; Échap ou un clic à côté pour fermer.
+
+`js/boot.js` choisit la vue au démarrage : la vue classique est **toujours utilisée sur téléphone** (plus simple à lire), et s'affiche d'office si la connexion est lente (mode économie de données, 2G), si l'appareil est très modeste, si WebGL est absent ou calculé sans carte graphique, ou si la fenêtre fait moins de 900 px de large (la barre latérale a besoin de place) ; la 3D (≈ 1 Mo) n'est alors pas téléchargée. Les projets se filtrent par catégorie (stages, universitaires, personnels, automatisation) et s'ouvrent dans une fiche au premier plan. La vue classique s'affiche dès la lecture du HTML, sans écran de chargement : le CSS et le script de démarrage sont intégrés à la page. Une politique de sécurité du contenu (CSP) limite les scripts au site lui-même et au script de démarrage, identifié par son empreinte SHA-256. Le formulaire de contact passe par FormSubmit.
 
 ## Construire le site (minification)
 
@@ -44,6 +50,8 @@ npm run build
 
 Le script met aussi à jour le numéro de version (`?v=…`) dans `index.html`, pour que les navigateurs rechargent les fichiers modifiés. Pensez à publier les fichiers `.min` générés avec les sources.
 
+**Transitions** : la caméra se déplace en 0,7 s environ (1,8 s pour le Parcours, qui traverse les nuages). Les durées suivent l'horloge et non le nombre d'images affichées, donc elles restent les mêmes sur un ordinateur lent ; si on enchaîne les clics, la dernière demande l'emporte et la caméra repart de sa position du moment. Si l'ordinateur affiche moins de 28 images par seconde pendant 3 s, un mode allégé retire les flous et les ombres coûteux (classe `lite`).
+
 Résultat mesuré avec Lighthouse (le moteur de PageSpeed Insights) : 100 en performance, accessibilité et bonnes pratiques, sur mobile comme sur ordinateur.
 
 ## Objets de la chambre
@@ -59,7 +67,7 @@ Résultat mesuré avec Lighthouse (le moteur de PageSpeed Insights) : 100 en per
 | Cadre au mur | Le CV, identique au PDF (`img/cv.webp` est généré depuis `cv/DIDIER_Baptiste_CV.pdf`), affiché en grand dans une fenêtre, avec téléchargement |
 | Réveil | Heure et météo de Belfort en direct (cliquable pour zoomer, sans étiquette) |
 
-Dans chaque section, des boutons sous le titre permettent de passer à la section précédente ou suivante. Le bouton à flèches à gauche de l'écran ouvre un menu latéral avec toutes les sections et un lien vers la **version classique** (`?vue=classique`) : tout le contenu sur une page, sans 3D. Cette version (fond clair, menu fixe à gauche, détails des projets dépliables) s'affiche aussi automatiquement si WebGL n'est pas disponible. Quand une rubrique est ouverte, son objet est mis en lumière et le reste de la chambre s'assombrit.
+Dans chaque section, des boutons sous le titre permettent de passer à la section précédente ou suivante, la barre de gauche indique la rubrique ouverte, et le bouton « Revenir à la chambre » (vert, même forme que le bouton de vue) est présent dans toutes les rubriques. Quand une rubrique est ouverte, son objet est mis en lumière et le reste de la chambre s'assombrit.
 
 Le ciel (fond de page et fenêtre de la chambre) suit la météo réelle de Belfort, via Open-Meteo (sans clé).
 
@@ -72,6 +80,7 @@ merci.html        page affichée après l'envoi du formulaire
 favicon.svg       logo « B » (+ img/apple-touch-icon.png, img/icon-192.png)
 css/style.css     styles de la chambre 3D et éléments communs (source)
 css/classic.css   styles de la vue classique (source)
+fonts/            police Ubuntu (4 fichiers woff2, réduits aux caractères du site)
 css/site.min.css  les deux feuilles réunies et minifiées, intégrées dans index.html (généré)
 css/simple.css    pages 404 et « message envoyé »
 js/boot.js        choix de la vue et chargement de la 3D à la demande
