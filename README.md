@@ -92,5 +92,8 @@ js/vendor/        Three.js et OrbitControls
 tools/build.mjs   construction des fichiers minifiés (npm run build)
 img/logos/        logos des compétences (hébergés sur le site)
 cv/DIDIER_Baptiste_CV.pdf   mon CV (PDF)
+
+ 
+
 img/projets/      captures des projets (img/projets/mini/ : vignettes)
 ```
