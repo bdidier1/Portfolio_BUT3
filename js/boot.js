@@ -50,11 +50,8 @@
   } catch (e) { /* stockage indisponible */ }
   var mode = asked === 'classique' ? 'classic' : ((slow || weak || soft) && !force ? 'classic' : '3d');
   if (!gl) mode = 'classic';
-  // Rendu 3D calculé par le processeur (pas de carte graphique) : la chambre saccaderait et bloquerait la page.
-  // On affiche alors une image de la chambre, et la vraie 3D ne démarre qu'au premier geste du visiteur.
-  var facade = mode === '3d' && soft;
   window.PORTFOLIO = {
-    mode: mode, gl: gl, phone: phone, route: route, force: force, facade: facade,
+    mode: mode, gl: gl, phone: phone, route: route, force: force,
     // raison affichée quand la vue classique a été choisie automatiquement (aucune sur téléphone)
     reason: mode === 'classic' && asked !== 'classique' && !phone ? (!gl ? 'webgl' : (slow ? 'reseau' : 'appareil')) : '',
   };
@@ -101,28 +98,8 @@
     if (mode === '3d' && i === files.length - 1) fontsReady(function () { load(i); });   // le dernier script crée la chambre
     else load(i);
   }
-  // Image de la chambre + bouton, à la place de la 3D (voir « facade » plus haut) ; la 3D se lance au premier geste
-  function showFacade() {
-    var loader = document.getElementById('loader'); if (loader) loader.remove();
-    var f = document.createElement('div');
-    f.id = 'facade'; f.className = 'facade';
-    f.innerHTML = '<img src="img/chambre-3d.webp" alt="" width="1600" height="900" decoding="async" fetchpriority="high">'
-      + '<div class="facade__box"><button type="button" class="facade__go">Lancer la chambre en 3D</button>'
-      + '<a class="facade__alt" href="?vue=classique' + (route ? '#' + route : '') + '">Vue classique</a></div>';
-    document.body.appendChild(f);
-    var ev = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
-    function go() {
-      ev.forEach(function (n) { removeEventListener(n, onGesture, true); });
-      var l = document.createElement('div'); l.id = 'loader'; l.className = 'loader'; l.innerHTML = '<p>Chargement<span class="dots"></span></p>';
-      document.body.appendChild(l);
-      next(0);
-    }
-    function onGesture(e) { if (e.target && e.target.closest && e.target.closest('.facade__alt')) return; go(); }
-    ev.forEach(function (n) { addEventListener(n, onGesture, { capture: true, passive: true }); });
-  }
   // Ce script est lu dans <head> pour que la vue classique s'affiche dès le premier rendu, sans écran
   // de chargement ; les scripts suivants ont besoin de toute la page, ils attendent donc la fin du HTML.
-  function start() { if (facade) showFacade(); else next(0); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { next(0); });
+  else next(0);
 })();

@@ -9,8 +9,12 @@
 :root{--bg:#05070b;--card:#0b0f16;--side:#070a0f;--sep:#1f2937;--text:#d4d8df;--bright:#fff;--mut:#8b93a1;--green:#3fb950;--blue:#3794ff;--key:#9cdcfe}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:210mm;height:297mm;font-family:Ubuntu,sans-serif;color:var(--text);font-size:8.2pt;line-height:1.34;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-body{background:var(--bg);overflow:hidden;display:grid;grid-template-columns:64mm 1fr}
-aside{background:var(--side);border-right:.3mm solid var(--sep);padding:9mm 6mm 6mm 7mm;display:flex;flex-direction:column;gap:5mm}
+body{background:var(--bg);overflow:hidden;display:grid;grid-template-columns:64mm 1fr;grid-template-rows:40mm 1fr}
+header{grid-column:1/3;display:flex;align-items:center;gap:8mm;padding:0 12mm;background:linear-gradient(120deg,#05070b 0%,#0b1320 100%);border-bottom:.5mm solid var(--green)}
+header .photo{width:28mm;height:28mm;flex:none}
+header h1{font-size:25pt}header h1 span{color:var(--green)}
+header .role{font-size:11pt;color:var(--key);font-weight:500;margin-top:2mm}
+aside{background:var(--side);border-right:.3mm solid var(--sep);padding:6mm 6mm 5mm 8mm;display:flex;flex-direction:column;gap:4.6mm}
 .me{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2.6mm}
 .photo{width:30mm;height:30mm;border-radius:50%;object-fit:cover;object-position:50% 28%;border:.9mm solid var(--green)}
 h1{font-size:16pt;font-weight:700;color:var(--bright);line-height:1.1;letter-spacing:-.2pt}
@@ -27,13 +31,13 @@ aside h2{font-size:9.4pt}
 .lang{display:flex;justify-content:space-between;color:var(--bright);font-weight:500;margin-bottom:1.3mm}
 .bar{height:1.8mm;border-radius:1mm;background:var(--sep);overflow:hidden}.bar i{display:block;height:100%;width:50%;background:var(--green)}
 .lvl{font-size:7pt;color:var(--mut);margin-top:1mm;text-align:right}
-.pills{display:flex;flex-direction:column;gap:1.8mm}
+.ints{list-style:none;display:grid;gap:1.8mm}.ints li{position:relative;padding-left:3.6mm;font-size:7.9pt}.ints li::before{content:"";position:absolute;left:0;top:1.5mm;width:1.5mm;height:1.5mm;border-radius:50%;background:var(--green)}
 .pill{border:.3mm solid #1b5e2b;background:rgba(63,185,80,.08);color:#7ee787;border-radius:3mm;padding:1.3mm 3mm;font-size:7.6pt;line-height:1.3}
-main{padding:7mm 8mm 5mm 7mm;display:flex;flex-direction:column;justify-content:space-between;gap:3mm}
+main{padding:6mm 10mm 5mm 8mm;display:flex;flex-direction:column;justify-content:space-between;gap:2mm}
 .top{display:flex;align-items:baseline;justify-content:space-between;padding:0 1mm}
 .top h1{font-size:23pt}.top h1 span{color:var(--green)}
 .top .role{font-size:9.6pt;color:var(--key);font-weight:500}
-.card{background:var(--card);border:.3mm solid var(--sep);border-radius:3.2mm;padding:4mm 5mm 3.4mm}
+.card{padding:0}
 .it{position:relative;padding-left:5mm;margin-bottom:2.4mm}
 .it:last-child{margin-bottom:0}
 .it::before{content:"";position:absolute;left:0;top:1.3mm;width:1.9mm;height:1.9mm;border-radius:50%;background:#3a4252}
@@ -46,14 +50,14 @@ main{padding:7mm 8mm 5mm 7mm;display:flex;flex-direction:column;justify-content:
 .it ul{list-style:none;margin-top:.8mm}.it li{padding-left:3.2mm;position:relative;color:var(--text)}
 .it li::before{content:"›";position:absolute;left:0;color:var(--blue);font-weight:700}
 .it p{color:var(--text);margin-top:.4mm}.it p b{color:var(--bright)}
-.sk{display:grid;grid-template-columns:30mm 1fr;gap:1.5mm 2mm;align-items:start}
-.sk dt{font-weight:700;color:var(--bright);padding-left:2.4mm;border-left:.8mm solid var(--c,var(--blue));line-height:1.35}
+.sk{display:grid;grid-template-columns:32mm 1fr;gap:1.4mm 2mm;align-items:start}
+.sk dt{font-weight:700;color:var(--bright);line-height:1.35}
 .sk dd{color:var(--text)}
 .chips{display:flex;flex-wrap:wrap;gap:1mm;align-content:flex-start}
 .chips span{background:var(--bg);border:.25mm solid var(--sep);border-radius:1.6mm;padding:.1mm 1.7mm;font-size:7.6pt;color:var(--bright);font-weight:500}
 </style></head><body>
+<header><img class="photo" src="photo.jpg" alt=""><div><h1>Baptiste <span>DIDIER</span></h1><p class="role">Recherche de stage en développement logiciel</p></div></header>
 <aside>
-  <div class="me"><img class="photo" src="photo.jpg" alt=""><div><h1>Baptiste DIDIER</h1></div><p class="role">Recherche de stage en développement logiciel</p></div>
   <section><h2><b>#</b>Coordonnées</h2><ul class="ct">
     <li><i style="background:#007aff"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></i><span>91 rue du Lieutenant Muller, 90400, Vézelois</span></li>
     <li><i style="background:#34c759"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></i><span>06 02 56 43 63</span></li>
@@ -63,25 +67,25 @@ main{padding:7mm 8mm 5mm 7mm;display:flex;flex-direction:column;justify-content:
     <li><i style="background:#30b0c7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></i><a href="https://bdidier1.github.io/Portfolio_BUT3/">bdidier1.github.io/Portfolio_BUT3</a></li></ul></section>
   <section><h2><b>#</b>Profil</h2><p class="prof">Actuellement étudiant en troisième année de BUT Informatique, je développe mes compétences en développement logiciel, conception d’applications et gestion de bases de données. Je suis à la recherche d’un stage de 12 à 16 semaines à partir de janvier 2027, afin de contribuer au développement, à l’optimisation et à la maintenance de vos applications et logiciels internes. Motivé, curieux et organisé, je souhaite mettre à profit mes compétences techniques ainsi que mon sens du travail en équipe pour participer activement aux projets de votre entreprise et apporter une réelle valeur ajoutée.</p></section>
   <section><h2><b>#</b>Langues</h2><div class="lang"><span>Anglais - B1</span></div><div class="bar"><i></i></div><p class="lvl">Intermédiaire</p></section>
-  <section><h2><b>#</b>Centres d’intérêt</h2><div class="pills">
-    <span class="pill">Veille informatique (Stack Overflow, Reddit, GitHub, Discord)</span>
-    <span class="pill">Jeux vidéo (gestion, stratégie, coopération multijoueur)</span>
-    <span class="pill">Pratique du football en club depuis 14 ans</span></div></section>
+  <section><h2><b>#</b>Centres d’intérêt</h2><ul class="ints">
+    <li>Veille informatique (Stack Overflow, Reddit, GitHub, Discord)</li>
+    <li>Jeux vidéo (gestion, stratégie, coopération multijoueur)</li>
+    <li>Pratique du football en club depuis 14 ans</li></ul></section>
 </aside>
 <main>
   <section class="card"><h2><b>#</b>Formation</h2>
     <div class="it"><h3><span>2024 - 2027 :</span> Préparation d’un BUT informatique (Bachelor Universitaire de Technologie) – IUT Nord Franche-Comté (Belfort) – deuxième année validée</h3><ul><li>Parcours Réalisation d'applications : conception, développement, validation.</li></ul></div>
     <div class="it"><h3><span>2024 :</span> Baccalauréat STI2D (Sciences et Technologies de l'Industrie et du Développement Durable)</h3><ul><li>Spécialités : SIN (Systèmes d'Information et Numérique)</li></ul></div></section>
   <section class="card"><h2><b>#</b>Compétences informatiques</h2><dl class="sk">
-    <dt style="--c:#3794ff">Langages</dt><dd class="chips"><span>Java</span><span>JavaScript</span><span>HTML/CSS</span><span>Python</span><span>C</span><span>C#</span><span>Kotlin</span><span>Swift</span></dd>
-    <dt style="--c:#ff7ab6">Frameworks</dt><dd class="chips"><span>JavaFX</span><span>Flask</span><span>Vue.js</span><span>Node.js</span><span>Qt</span></dd>
-    <dt style="--c:#f2c94c">Logiciels</dt><dd class="chips"><span>PyCharm</span><span>IntelliJ IDEA</span><span>DataGrip</span><span>Visual Studio Code</span><span>Unity</span><span>Vim</span></dd>
-    <dt style="--c:#ff9500">Outils de versionnement</dt><dd class="chips"><span>Git</span><span>GitHub</span><span>GitLab</span><span>Bitbucket</span></dd>
-    <dt style="--c:#3fb950">Base de données</dt><dd class="chips"><span>MySQL</span><span>PostgreSQL</span></dd>
-    <dt style="--c:#af52de">Méthodologie</dt><dd>Merise, MCD (Modèle Conceptuel de Données), MLD (Modèle Logique des Données)</dd>
-    <dt style="--c:#30b0c7">Outils de gestion de projet</dt><dd class="chips"><span>Notion</span><span>Trello</span></dd>
-    <dt style="--c:#8e8e93">OS</dt><dd class="chips"><span>Windows</span><span>Linux</span></dd>
-    <dt style="--c:#5856d6">Savoir-faire</dt><dd>Analyse des besoins clients et rédaction de cahiers des charges, correction et maintenance de logiciels</dd></dl></section>
+    <dt>Langages</dt><dd>Java, JavaScript, HTML/CSS, Python, C, C#, Kotlin, Swift</dd>
+    <dt>Frameworks</dt><dd>JavaFX, Flask, Vue.js, Node.js, Qt</dd>
+    <dt>Logiciels</dt><dd>PyCharm, IntelliJ IDEA, DataGrip, Visual Studio Code, Unity, Vim</dd>
+    <dt>Outils de versionnement</dt><dd>Git, GitHub, GitLab, Bitbucket</dd>
+    <dt>Base de données</dt><dd>MySQL, PostgreSQL</dd>
+    <dt>Méthodologie</dt><dd>Merise, MCD (Modèle Conceptuel de Données), MLD (Modèle Logique des Données)</dd>
+    <dt>Outils de gestion de projet</dt><dd>Notion, Trello</dd>
+    <dt>OS</dt><dd>Windows, Linux</dd>
+    <dt>Savoir-faire</dt><dd>Analyse des besoins clients et rédaction de cahiers des charges, correction et maintenance de logiciels</dd></dl></section>
   <section class="card"><h2><b>#</b>Projets universitaires informatiques</h2>
     <div class="it"><p><b>09/2025 - 03/2026 :</b> Développement en équipe (5 personnes) d’un site web avec Vue.js et Node.js, selon la méthodologie agile, à partir d’un cahier des charges.</p></div>
     <div class="it"><p><b>04/2025 - 06/2025 :</b> Développement en équipe (5 personnes) d’un jeu de plateau numérique “PuissanceX” en Java, avec deux intelligences artificielles et des tests unitaires JUnit, en tant que chef d’équipe.</p></div>

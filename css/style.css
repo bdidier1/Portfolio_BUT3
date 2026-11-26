@@ -829,11 +829,3 @@ figure.is-zoomable:hover::after { opacity: 1; transform: scale(1.08); }
 .lite .window, .lite .sectitle, .lite .bubble, .lite .thought__cloud, .lite .browser { animation: none !important; }
 .lite .window, .lite .browser, .lite .dock, .lite .secnav button { box-shadow: none !important; }
 
-/* Image de la chambre affichée à la place de la 3D tant que le visiteur n'a rien touché (rendu logiciel, sans carte graphique) */
-.facade { position: fixed; inset: 0 0 0 var(--side-w, 0px); z-index: 5; background: var(--bg); }
-.facade img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.facade__box { position: absolute; left: 50%; bottom: 8vh; transform: translateX(-50%); display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 12px; border-radius: 14px; background: rgba(5, 7, 11, .82); border: 1px solid var(--border); }
-.facade__go, .facade__alt { font: inherit; font-weight: 600; min-height: 40px; padding: 0 18px; border-radius: 10px; display: inline-flex; align-items: center; cursor: pointer; color: #fff; text-decoration: none; }
-.facade__go { background: #1a7f37; border: 1px solid #238636; }
-.facade__alt { background: transparent; border: 1px solid var(--border); }
-.facade__go:hover, .facade__alt:hover { filter: brightness(1.15); }
