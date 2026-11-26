@@ -5,90 +5,94 @@
 @font-face{font-family:Ubuntu;font-weight:500;src:url(../../fonts/ubuntu-500.woff2)}
 @font-face{font-family:Ubuntu;font-weight:700;src:url(../../fonts/ubuntu-700.woff2)}
 @page{size:A4;margin:0}
-:root{--bg:#05070b;--ink:#1b2330;--mut:#5d6878;--acc:#3794ff;--acc2:#0b6fd6;--line:#dbe3ee;--soft:#eef4fb}
+/* Même direction artistique que le site (vue classique) : fond #05070b, cartes #0b0f16, filets #1f2937, accent vert, # bleu */
+:root{--bg:#05070b;--card:#0b0f16;--side:#070a0f;--sep:#1f2937;--text:#d4d8df;--bright:#fff;--mut:#8b93a1;--green:#3fb950;--blue:#3794ff;--key:#9cdcfe}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:210mm;height:297mm;font-family:Ubuntu,sans-serif;color:var(--ink);font-size:8.4pt;line-height:1.34;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-body{background:#fff;position:relative;overflow:hidden}
-header{height:40mm;background:linear-gradient(120deg,#05070b 0%,#0e1a2e 60%,#123a6b 100%);color:#fff;display:flex;align-items:center;gap:7mm;padding:0 12mm;position:relative}
-header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1.6mm;background:linear-gradient(90deg,var(--acc),#9cdcfe)}
-.photo{width:28mm;height:28mm;border-radius:50%;object-fit:cover;object-position:50% 30%;border:1.2mm solid var(--acc);flex:none}
-h1{font-size:23pt;font-weight:700;letter-spacing:.3pt;line-height:1.05}
-h1 b{color:#9cdcfe;font-weight:700}
-.role{margin-top:2.2mm;font-size:11pt;color:#cfe0f5;font-weight:500}
-.tag{display:inline-block;margin-top:3mm;padding:.8mm 3mm;border:.3mm solid #9cdcfe;border-radius:10mm;font-size:8pt;color:#9cdcfe}
-.wrap{display:grid;grid-template-columns:62mm 1fr;height:257mm}
-aside{background:var(--soft);padding:5mm 5mm 4mm 10mm;border-right:.3mm solid var(--line)}
-main{padding:5mm 10mm 4mm 7mm}
-h2{font-size:9.8pt;font-weight:700;text-transform:uppercase;letter-spacing:.9pt;color:var(--acc2);margin:0 0 2.6mm;display:flex;align-items:center;gap:2mm}
-h2::after{content:"";flex:1;height:.3mm;background:var(--line)}
-aside section,main section{margin-bottom:3.8mm}
-aside p,aside li{font-size:8pt}
-.ct{list-style:none}
-.ct li{display:flex;gap:2.4mm;margin-bottom:1.7mm;align-items:center;overflow-wrap:anywhere;font-size:7.2pt}
-.ct i{flex:none;width:5.4mm;height:5.4mm;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center}.ct svg{width:3mm;height:3mm;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.ct a{color:var(--acc2);text-decoration:none;font-weight:500;white-space:nowrap;font-size:6.5pt}
-.prof{text-align:left}
-.lang{display:flex;justify-content:space-between;font-weight:500;margin-bottom:1.2mm}
-.bar{height:2mm;border-radius:1mm;background:#cfdbea;overflow:hidden}.bar i{display:block;height:100%;width:50%;background:linear-gradient(90deg,var(--acc),#9cdcfe)}
+html,body{width:210mm;height:297mm;font-family:Ubuntu,sans-serif;color:var(--text);font-size:8.2pt;line-height:1.34;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:var(--bg);overflow:hidden;display:grid;grid-template-columns:64mm 1fr}
+aside{background:var(--side);border-right:.3mm solid var(--sep);padding:9mm 6mm 6mm 7mm;display:flex;flex-direction:column;gap:5mm}
+.me{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2.6mm}
+.photo{width:30mm;height:30mm;border-radius:50%;object-fit:cover;object-position:50% 28%;border:.9mm solid var(--green)}
+h1{font-size:16pt;font-weight:700;color:var(--bright);line-height:1.1;letter-spacing:-.2pt}
+.role{font-size:8.4pt;color:var(--mut)}
+h2{font-size:10.5pt;font-weight:700;color:var(--bright);margin-bottom:2.4mm;letter-spacing:-.1pt}
+h2 b{color:var(--blue);font-weight:700;margin-right:1.2mm}
+aside h2{font-size:9.4pt}
+.ct{list-style:none;display:grid;gap:1.9mm}
+.ct li{display:flex;gap:2.4mm;align-items:center;color:var(--bright);overflow-wrap:anywhere;font-size:7.7pt}
+.ct i{flex:none;width:5.6mm;height:5.6mm;border-radius:1.6mm;display:flex;align-items:center;justify-content:center}
+.ct svg{width:3.3mm;height:3.3mm;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ct a{color:var(--key);text-decoration:none;white-space:nowrap;font-size:6.6pt;font-weight:500}
+.prof{color:var(--text);text-align:left;font-size:7.9pt}
+.lang{display:flex;justify-content:space-between;color:var(--bright);font-weight:500;margin-bottom:1.3mm}
+.bar{height:1.8mm;border-radius:1mm;background:var(--sep);overflow:hidden}.bar i{display:block;height:100%;width:50%;background:var(--green)}
 .lvl{font-size:7pt;color:var(--mut);margin-top:1mm;text-align:right}
-.ints{list-style:none}.ints li{padding-left:4mm;position:relative;margin-bottom:1.8mm}
-.ints li::before{content:"";position:absolute;left:0;top:1.7mm;width:1.8mm;height:1.8mm;border-radius:50%;background:var(--acc)}
-.it{position:relative;padding-left:5mm;margin-bottom:2.4mm;border-left:.4mm solid var(--line);margin-left:1mm}
-.it::before{content:"";position:absolute;left:-1.6mm;top:.9mm;width:2.8mm;height:2.8mm;border-radius:50%;background:#fff;border:.6mm solid var(--acc)}
-.it h3{font-size:8.8pt;font-weight:700;line-height:1.3}
-.it h3 span{color:var(--acc2)}
-.it .sub{font-weight:500;color:var(--mut);font-size:8.2pt}
-.it ul{list-style:none;margin-top:.8mm}.it li{padding-left:3.2mm;position:relative;color:#2d3745}
-.it li::before{content:"›";position:absolute;left:0;color:var(--acc);font-weight:700}
-.it p{color:#2d3745;text-align:justify;margin-top:.6mm}
-.sk{display:grid;grid-template-columns:30mm 1fr;gap:1.3mm 2mm}
-.sk dt{font-weight:700;color:var(--ink)}.sk dd{color:#2d3745}
-.chips{display:flex;align-content:flex-start;align-items:flex-start;flex-wrap:wrap;gap:1mm}.chips span{background:var(--soft);border:.25mm solid var(--line);border-radius:1.5mm;padding:0 1.5mm;font-size:7.9pt;color:#1d2a3b}
+.pills{display:flex;flex-direction:column;gap:1.8mm}
+.pill{border:.3mm solid #1b5e2b;background:rgba(63,185,80,.08);color:#7ee787;border-radius:3mm;padding:1.3mm 3mm;font-size:7.6pt;line-height:1.3}
+main{padding:7mm 8mm 5mm 7mm;display:flex;flex-direction:column;justify-content:space-between;gap:3mm}
+.top{display:flex;align-items:baseline;justify-content:space-between;padding:0 1mm}
+.top h1{font-size:23pt}.top h1 span{color:var(--green)}
+.top .role{font-size:9.6pt;color:var(--key);font-weight:500}
+.card{background:var(--card);border:.3mm solid var(--sep);border-radius:3.2mm;padding:4mm 5mm 3.4mm}
+.it{position:relative;padding-left:5mm;margin-bottom:2.4mm}
+.it:last-child{margin-bottom:0}
+.it::before{content:"";position:absolute;left:0;top:1.3mm;width:1.9mm;height:1.9mm;border-radius:50%;background:#3a4252}
+.it:first-of-type::before{background:var(--green);box-shadow:0 0 0 .6mm rgba(63,185,80,.25)}
+.it::after{content:"";position:absolute;left:.85mm;top:3.6mm;bottom:-2.6mm;width:.25mm;background:var(--sep)}
+.it:last-child::after{display:none}
+.it h3{font-size:8.6pt;font-weight:700;color:var(--bright);line-height:1.3}
+.it h3 span{color:#7ee787;font-weight:500}
+.sub{color:var(--mut);font-size:8pt;font-weight:500}
+.it ul{list-style:none;margin-top:.8mm}.it li{padding-left:3.2mm;position:relative;color:var(--text)}
+.it li::before{content:"›";position:absolute;left:0;color:var(--blue);font-weight:700}
+.it p{color:var(--text);margin-top:.4mm}.it p b{color:var(--bright)}
+.sk{display:grid;grid-template-columns:30mm 1fr;gap:1.5mm 2mm;align-items:start}
+.sk dt{font-weight:700;color:var(--bright);padding-left:2.4mm;border-left:.8mm solid var(--c,var(--blue));line-height:1.35}
+.sk dd{color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:1mm;align-content:flex-start}
+.chips span{background:var(--bg);border:.25mm solid var(--sep);border-radius:1.6mm;padding:.1mm 1.7mm;font-size:7.6pt;color:var(--bright);font-weight:500}
 </style></head><body>
-<header>
-  <img class="photo" src="photo.jpg" alt="">
-  <div><h1>Baptiste <b>DIDIER</b></h1><p class="role">Recherche de stage en développement logiciel</p></div>
-</header>
-<div class="wrap">
 <aside>
-  <section><h2>Coordonnées</h2><ul class="ct">
-    <li><i><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></i><span>91 rue du Lieutenant Muller, 90400, Vézelois</span></li>
-    <li><i><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></i><span>06 02 56 43 63</span></li>
-    <li><i><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></i><span>baptiste.didier@proton.me</span></li>
-    <li><i><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><span>08/10/2006</span></li>
-    <li><i><svg viewBox="0 0 24 24"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><path d="M3 12h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/></svg></i><span>Permis B - Véhiculé</span></li>
-    <li><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></i><a href="https://bdidier1.github.io/Portfolio_BUT3/">bdidier1.github.io/Portfolio_BUT3</a></li></ul></section>
-  <section><h2>Profil</h2><p class="prof">Actuellement étudiant en troisième année de BUT Informatique, je développe mes compétences en développement logiciel, conception d’applications et gestion de bases de données. Je suis à la recherche d’un stage de 12 à 16 semaines à partir de janvier 2027, afin de contribuer au développement, à l’optimisation et à la maintenance de vos applications et logiciels internes. Motivé, curieux et organisé, je souhaite mettre à profit mes compétences techniques ainsi que mon sens du travail en équipe pour participer activement aux projets de votre entreprise et apporter une réelle valeur ajoutée.</p></section>
-  <section><h2>Langues</h2><div class="lang"><span>Anglais - B1</span></div><div class="bar"><i></i></div><p class="lvl">Intermédiaire</p></section>
-  <section><h2>Centres d’intérêt</h2><ul class="ints">
-    <li>Veille informatique (Stack Overflow, Reddit, GitHub, Discord)</li>
-    <li>Jeux vidéo (gestion, stratégie, coopération multijoueur)</li>
-    <li>Pratique du football en club depuis 14 ans</li></ul></section>
+  <div class="me"><img class="photo" src="photo.jpg" alt=""><div><h1>Baptiste DIDIER</h1></div><p class="role">Recherche de stage en développement logiciel</p></div>
+  <section><h2><b>#</b>Coordonnées</h2><ul class="ct">
+    <li><i style="background:#007aff"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></i><span>91 rue du Lieutenant Muller, 90400, Vézelois</span></li>
+    <li><i style="background:#34c759"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></i><span>06 02 56 43 63</span></li>
+    <li><i style="background:#ff9500"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></i><span>baptiste.didier@proton.me</span></li>
+    <li><i style="background:#af52de"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><span>08/10/2006</span></li>
+    <li><i style="background:#5856d6"><svg viewBox="0 0 24 24"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><path d="M3 12h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/></svg></i><span>Permis B - Véhiculé</span></li>
+    <li><i style="background:#30b0c7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></i><a href="https://bdidier1.github.io/Portfolio_BUT3/">bdidier1.github.io/Portfolio_BUT3</a></li></ul></section>
+  <section><h2><b>#</b>Profil</h2><p class="prof">Actuellement étudiant en troisième année de BUT Informatique, je développe mes compétences en développement logiciel, conception d’applications et gestion de bases de données. Je suis à la recherche d’un stage de 12 à 16 semaines à partir de janvier 2027, afin de contribuer au développement, à l’optimisation et à la maintenance de vos applications et logiciels internes. Motivé, curieux et organisé, je souhaite mettre à profit mes compétences techniques ainsi que mon sens du travail en équipe pour participer activement aux projets de votre entreprise et apporter une réelle valeur ajoutée.</p></section>
+  <section><h2><b>#</b>Langues</h2><div class="lang"><span>Anglais - B1</span></div><div class="bar"><i></i></div><p class="lvl">Intermédiaire</p></section>
+  <section><h2><b>#</b>Centres d’intérêt</h2><div class="pills">
+    <span class="pill">Veille informatique (Stack Overflow, Reddit, GitHub, Discord)</span>
+    <span class="pill">Jeux vidéo (gestion, stratégie, coopération multijoueur)</span>
+    <span class="pill">Pratique du football en club depuis 14 ans</span></div></section>
 </aside>
 <main>
-  <section><h2>Formation</h2>
+  <section class="card"><h2><b>#</b>Formation</h2>
     <div class="it"><h3><span>2024 - 2027 :</span> Préparation d’un BUT informatique (Bachelor Universitaire de Technologie) – IUT Nord Franche-Comté (Belfort) – deuxième année validée</h3><ul><li>Parcours Réalisation d'applications : conception, développement, validation.</li></ul></div>
     <div class="it"><h3><span>2024 :</span> Baccalauréat STI2D (Sciences et Technologies de l'Industrie et du Développement Durable)</h3><ul><li>Spécialités : SIN (Systèmes d'Information et Numérique)</li></ul></div></section>
-  <section><h2>Compétences informatiques</h2><dl class="sk">
-    <dt>Langages</dt><dd class="chips"><span>Java</span><span>JavaScript</span><span>HTML/CSS</span><span>Python</span><span>C</span><span>C#</span><span>Kotlin</span><span>Swift</span></dd>
-    <dt>Frameworks</dt><dd class="chips"><span>JavaFX</span><span>Flask</span><span>Vue.js</span><span>Node.js</span><span>Qt</span></dd>
-    <dt>Logiciels</dt><dd class="chips"><span>PyCharm</span><span>IntelliJ IDEA</span><span>DataGrip</span><span>Visual Studio Code</span><span>Unity</span><span>Vim</span></dd>
-    <dt>Outils de versionnement</dt><dd class="chips"><span>Git</span><span>GitHub</span><span>GitLab</span><span>Bitbucket</span></dd>
-    <dt>Base de données</dt><dd class="chips"><span>MySQL</span><span>PostgreSQL</span></dd>
-    <dt>Méthodologie</dt><dd>Merise, MCD (Modèle Conceptuel de Données), MLD (Modèle Logique des Données)</dd>
-    <dt>Outils de gestion de projet</dt><dd class="chips"><span>Notion</span><span>Trello</span></dd>
-    <dt>OS</dt><dd class="chips"><span>Windows</span><span>Linux</span></dd>
-    <dt>Savoir-faire</dt><dd>Analyse des besoins clients et rédaction de cahiers des charges, correction et maintenance de logiciels</dd></dl></section>
-  <section><h2>Projets universitaires informatiques</h2>
+  <section class="card"><h2><b>#</b>Compétences informatiques</h2><dl class="sk">
+    <dt style="--c:#3794ff">Langages</dt><dd class="chips"><span>Java</span><span>JavaScript</span><span>HTML/CSS</span><span>Python</span><span>C</span><span>C#</span><span>Kotlin</span><span>Swift</span></dd>
+    <dt style="--c:#ff7ab6">Frameworks</dt><dd class="chips"><span>JavaFX</span><span>Flask</span><span>Vue.js</span><span>Node.js</span><span>Qt</span></dd>
+    <dt style="--c:#f2c94c">Logiciels</dt><dd class="chips"><span>PyCharm</span><span>IntelliJ IDEA</span><span>DataGrip</span><span>Visual Studio Code</span><span>Unity</span><span>Vim</span></dd>
+    <dt style="--c:#ff9500">Outils de versionnement</dt><dd class="chips"><span>Git</span><span>GitHub</span><span>GitLab</span><span>Bitbucket</span></dd>
+    <dt style="--c:#3fb950">Base de données</dt><dd class="chips"><span>MySQL</span><span>PostgreSQL</span></dd>
+    <dt style="--c:#af52de">Méthodologie</dt><dd>Merise, MCD (Modèle Conceptuel de Données), MLD (Modèle Logique des Données)</dd>
+    <dt style="--c:#30b0c7">Outils de gestion de projet</dt><dd class="chips"><span>Notion</span><span>Trello</span></dd>
+    <dt style="--c:#8e8e93">OS</dt><dd class="chips"><span>Windows</span><span>Linux</span></dd>
+    <dt style="--c:#5856d6">Savoir-faire</dt><dd>Analyse des besoins clients et rédaction de cahiers des charges, correction et maintenance de logiciels</dd></dl></section>
+  <section class="card"><h2><b>#</b>Projets universitaires informatiques</h2>
     <div class="it"><p><b>09/2025 - 03/2026 :</b> Développement en équipe (5 personnes) d’un site web avec Vue.js et Node.js, selon la méthodologie agile, à partir d’un cahier des charges.</p></div>
     <div class="it"><p><b>04/2025 - 06/2025 :</b> Développement en équipe (5 personnes) d’un jeu de plateau numérique “PuissanceX” en Java, avec deux intelligences artificielles et des tests unitaires JUnit, en tant que chef d’équipe.</p></div>
     <div class="it"><p><b>03/2025 - 05/2025 :</b> Réalisation en équipe (4 personnes) d’un site e-commerce de vente de câbles avec Flask, intégrant une base de données SQL et une interface utilisateur en Python.</p></div>
     <div class="it"><p><b>12/2024 - 01/2025 :</b> Conception en binôme du projet Pauvocodeur en Java, pour la manipulation de fichiers audio avec diverses transformations (dilatation temporelle, fréquence, écho…).</p></div></section>
-  <section><h2>Expérience professionnelle</h2>
+  <section class="card"><h2><b>#</b>Expérience professionnelle</h2>
     <div class="it"><h3>Stagiaire, 04/2026 - 06/2026</h3><div class="sub">EzDEV - Montreux-Château</div><ul>
       <li>Migration d’une application GED de Python 3.11 vers 3.13 : audit des dépendances et adaptation du code.</li>
       <li>Développement d’outils d’analyse statique et de couverture des tests avec LibCST, pytest et coverage.py.</li>
       <li>Automatisation des tests et rapports et contribution à la CI/CD avec GitLab.</li></ul></div>
     <div class="it"><h3>Saisonnier, 06/2025 - 07/2025</h3><div class="sub">Auchan Bessoncourt - CDD</div><ul><li>Mise en rayon et réapprovisionnement.</li></ul></div>
     <div class="it"><h3>Stagiaire, 11/2020</h3><div class="sub">Techniques Surfaces - Valentigney</div><ul><li>Tâches administratives : classement, gestion documentaire, utilisation d'Excel.</li></ul></div></section>
-</main></div>
+</main>
 </body></html>

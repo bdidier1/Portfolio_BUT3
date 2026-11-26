@@ -683,7 +683,7 @@
     // ---------- Cadre CV (le vrai CV) ----------
     const cvFrame = new T.Group(); cvFrame.position.set(2.0, 1.95, -2.47); room.add(cvFrame);
     box(cvFrame, 0.82, 1.14, 0.04, 0xd4af37, 0, 0, 0);
-    const cvImg = new T.TextureLoader().load('img/cv.webp?v=20261126a');
+    const cvImg = new T.TextureLoader().load('img/cv.webp?v=20261126b');
     cvImg.anisotropy = renderer.capabilities.getMaxAnisotropy();
     const cvFace = new T.Mesh(new T.PlaneGeometry(0.74, 0.74 * 1.4142), new T.MeshBasicMaterial({ map: cvImg }));
     cvFace.position.z = 0.025; cvFrame.add(cvFace);

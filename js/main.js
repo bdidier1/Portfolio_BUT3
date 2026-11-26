@@ -443,7 +443,7 @@
     });
     const h = BOOT.route || location.hash.slice(1);
     if (KEYS.includes(h)) requestAnimationFrame(() => go(h, true));
-    $('#loader').remove();
+    $('#loader').remove(); const fc = $('#facade'); if (fc) fc.remove();
     if (sw) sw.dataset.ready = '1';
   }
 
@@ -919,6 +919,7 @@
   // ---------- Démarrage ----------
   const loader = $('#loader');
   loader.classList.add('is-done'); setTimeout(() => loader.remove(), 600);
+  { const fc = $('#facade'); if (fc) fc.remove(); }
   const fromHash = BOOT.route || location.hash.slice(1);
   if (KEYS.includes(fromHash)) activate(fromHash);
   else room.intro(() => say('Bonjour, je suis Baptiste ! Cliquez sur moi pour faire connaissance.'));
