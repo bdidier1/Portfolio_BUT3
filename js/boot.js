@@ -5,7 +5,21 @@
   'use strict';
   var V = '?v=20261122a';
   var html = document.documentElement;
-  var asked = new URLSearchParams(location.search).get('vue');   // « classique », « 3d » ou rien
+  // Routes acceptées : ?vue=3d#contact, ?vue=classique#projets, #cv, et les écritures approchantes
+  // (?vue=3d/contact, ?vue=3dcontact, ?vue=3d%23contact, caractères invisibles collés dans un lien copié…).
+  var KEYS = ['apropos', 'projets', 'competences', 'parcours', 'veille', 'contact', 'cv', 'reveil'];
+  var raw = '';
+  try { raw = decodeURIComponent(location.search + ' ' + location.hash); } catch (e) { raw = location.search + ' ' + location.hash; }
+  raw = raw.replace(/[​-‏⁠﻿­]/g, '').toLowerCase()
+    .replace(/[àâä]/g, 'a').replace(/[éèêë]/g, 'e').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ùûü]/g, 'u');
+  var vm = /vue=(3d|classique|classic)/.exec(raw);
+  var asked = vm ? (vm[1] === '3d' ? '3d' : 'classique') : null;
+  var rest = raw.replace(/vue=(3d|classique|classic)/g, ' ').replace(/[^a-z]+/g, ' ');
+  var route = '';
+  KEYS.forEach(function (k) { if (!route && k !== 'cv' && rest.indexOf(k) > -1) route = k; });
+  if (!route && /competence/.test(rest)) route = 'competences';
+  if (!route && /(^| )cv( |$)/.test(rest)) route = 'cv';
+
   var c = navigator.connection || {};
   var slow = !!c.saveData || /(^|-)2g$/.test(c.effectiveType || '');
   var weak = (navigator.deviceMemory && navigator.deviceMemory < 2) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 2);
@@ -26,16 +40,27 @@
     } catch (e) { return false; }
   })();
 
-  var mode = asked === 'classique' ? 'classic' : (asked === '3d' ? '3d' : (slow || weak || soft ? 'classic' : '3d'));
+  // Le bouton « Vue 3D » de la vue classique force la 3D pour cette session (le visiteur a choisi, on n'insiste pas)
+  var force = false;
+  try { force = sessionStorage.getItem('portfolio-force3d') === '1'; } catch (e) { /* ignoré */ }
+  if (asked === 'classique') { try { sessionStorage.removeItem('portfolio-force3d'); } catch (e) { /* ignoré */ } force = false; }
+  var mode = asked === 'classique' ? 'classic' : ((slow || weak || soft) && !force ? 'classic' : '3d');
   if (!gl) mode = 'classic';
   window.PORTFOLIO = {
-    mode: mode, gl: gl, phone: phone,
+    mode: mode, gl: gl, phone: phone, route: route, force: force,
     // raison affichée quand la vue classique a été choisie automatiquement (aucune sur téléphone)
     reason: mode === 'classic' && asked !== 'classique' && !phone ? (!gl ? 'webgl' : (slow ? 'reseau' : 'appareil')) : '',
   };
   html.classList.add(mode === 'classic' ? 'classic' : 'mode-3d');
-  // La barre latérale garde l'état choisi (ouverte ou fermée), appliqué avant le premier affichage pour qu'elle ne saute pas
-  try { if (localStorage.getItem('portfolio-menu') === 'closed') html.classList.add('side-closed'); } catch (e) { /* stockage indisponible */ }
+  // Barre latérale : fermée par défaut dans la chambre 3D (elle reste ouverte si le visiteur l'a ouverte), ouverte dans la vue classique
+  var menuOpen = false;
+  try { menuOpen = localStorage.getItem('portfolio-menu-3d') === 'open'; } catch (e) { /* stockage indisponible */ }
+  if (mode === '3d' && !menuOpen) html.classList.add('side-closed');
+  // Adresse normalisée (?vue=3d#contact) : un lien approximatif est réécrit proprement sans recharger la page
+  try {
+    var clean = (asked ? '?vue=' + asked : location.search.replace(/[^\x20-\x7e]/g, '')) + (route ? '#' + route : '');
+    if (asked && clean !== location.search + location.hash) history.replaceState(null, '', location.pathname + clean);
+  } catch (e) { /* ignoré */ }
 
   var files = ['js/main.min.js' + V];
   // Police Ubuntu (texte, titres, textures de la chambre) : demandée tout de suite, sans attendre que le CSS soit analysé
@@ -60,7 +85,7 @@
     s.onload = function () { next(i + 1); };
     s.onerror = function () {
       // Un fichier de la 3D n'a pas pu se charger (réseau coupé…) : on bascule sur la vue classique
-      if (mode === '3d') location.replace('?vue=classique' + location.hash);
+      if (mode === '3d') location.replace('?vue=classique' + (route ? '#' + route : ''));
     };
     document.head.appendChild(s);
   }

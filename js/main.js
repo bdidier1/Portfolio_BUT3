@@ -343,6 +343,7 @@
     sw.setAttribute('aria-label', to3d ? 'Vue 3D : passer à la chambre en 3D' : 'Vue classique : passer à la page sans 3D');
   }
   if (sw && BOOT.mode === 'classic' && !BOOT.gl) sw.remove(); else updateSwitch(null);
+  if (sw) sw.addEventListener('click', () => { try { if (BOOT.mode === 'classic') sessionStorage.setItem('portfolio-force3d', '1'); } catch (e) { /* ignoré */ } });
 
   // ---------- Barre latérale : on peut l'ouvrir et la fermer quand on veut (grand écran) ----------
   const sideBtn = $('#side-toggle');
@@ -354,7 +355,7 @@
   function setSide(open) {
     html.classList.toggle('side-closed', !open);
     paintSide();
-    try { localStorage.setItem('portfolio-menu', open ? 'open' : 'closed'); } catch (e) { /* stockage indisponible : l'état n'est juste pas retenu */ }
+    try { if (BOOT.mode === '3d') localStorage.setItem('portfolio-menu-3d', open ? 'open' : 'closed'); } catch (e) { /* stockage indisponible : l'état n'est juste pas retenu */ }
     window.dispatchEvent(new Event('sidechange'));
   }
   sideBtn.addEventListener('click', () => setSide(html.classList.contains('side-closed')));
@@ -367,7 +368,7 @@
       room = window.Room.create($('#scene'), {
         onPick: (k) => activate(k), onHover: hoverPin, onBook: onBook, onLevel: onLevel,
         onTransit: (on) => html.classList.toggle('in-transit', on),
-        onLost: () => { location.replace('?vue=classique' + location.hash); },
+        onLost: () => { location.replace('?vue=classique' + (location.hash || (BOOT.route ? '#' + BOOT.route : ''))); },
       });
     } catch (e) { room = null; }
   }
@@ -376,7 +377,7 @@
   function classicMode() {
     // Classes changées seulement si besoin : chaque modification de <html> recalcule les styles de toute la page
     if (!html.classList.contains('classic')) { html.classList.remove('mode-3d'); html.classList.add('classic'); }
-    BOOT.mode = 'classic'; updateSwitch(null);
+    BOOT.mode = 'classic'; html.classList.remove('side-closed'); updateSwitch(null);
     ['#scene', '#sky', '#precip', '#pins', '#bubble', '#hint', '#thought', '#modebar', '#secnav', '#sectitle', '#dock', '#browser', '#title']
       .forEach((s) => { const el = $(s); if (el) el.remove(); });
     const note = $('#classic-note');
@@ -432,7 +433,7 @@
       const o = e.target.closest('[data-open]');
       if (o) { e.preventDefault(); go(o.dataset.open); }
     });
-    const h = location.hash.slice(1);
+    const h = BOOT.route || location.hash.slice(1);
     if (KEYS.includes(h)) requestAnimationFrame(() => go(h));
     $('#loader').remove();
     if (sw) sw.dataset.ready = '1';
@@ -631,7 +632,7 @@
 
   // ---------- Commandes en bas de l'écran ----------
   function setHash(k) {
-    try { history.replaceState(null, '', k ? '#' + k : location.pathname + location.search); } catch (e) { /* ignoré */ }
+    try { history.replaceState(null, '', location.pathname + location.search + (k ? '#' + k : '')); } catch (e) { /* ignoré */ }
   }
   function dockHtml(h) { dock.hidden = !h; dock.innerHTML = h || ''; }
 
@@ -910,7 +911,7 @@
   // ---------- Démarrage ----------
   const loader = $('#loader');
   loader.classList.add('is-done'); setTimeout(() => loader.remove(), 600);
-  const fromHash = location.hash.slice(1);
+  const fromHash = BOOT.route || location.hash.slice(1);
   if (KEYS.includes(fromHash)) activate(fromHash);
   else room.intro(() => say('Bonjour, je suis Baptiste ! Cliquez sur moi pour faire connaissance.'));
 })();

@@ -29,6 +29,10 @@ Les deux vues partagent **la même barre de navigation**, à gauche : mon nom, l
 
 **Images des projets** : chaque image d'une fiche est cliquable (ou activable au clavier) et s'ouvre en grand dans une visionneuse. Zoom à la molette, aux boutons + et −, par double clic ou double toucher, ou en pinçant ; on déplace l'image en la faisant glisser ; flèches ou boutons pour passer d'une image à l'autre ; Échap ou un clic à côté pour fermer.
 
+**Démarrage** : la chambre 3D s'ouvre en priorité, barre latérale **fermée** (elle s'ouvre avec la languette et l'état est retenu). Si l'appareil manque de performance (téléphone, connexion lente, appareil modeste, WebGL absent ou logiciel, ou moins de ~24 images/s même à résolution minimale), le site passe à la vue classique, barre **ouverte**. Liens directs : `?vue=3d#contact`, `?vue=classique#projets`, `#cv`… (rubriques : apropos, projets, competences, parcours, veille, cv, contact) ; les écritures approchantes (`?vue=3d/contact`, `?vue=3dcontact`, `%23`) sont reconnues et réécrites proprement.
+
+**CV** : `tools/cv/cv.html` (source) → `cv/DIDIER_Baptiste_CV.pdf` et `img/cv.webp` via `node tools/cv/build.cjs` (Playwright).
+
 `js/boot.js` choisit la vue au démarrage : la vue classique est **toujours utilisée sur téléphone** (plus simple à lire), et s'affiche d'office si la connexion est lente (mode économie de données, 2G), si l'appareil est très modeste, si WebGL est absent ou calculé sans carte graphique, ou si la fenêtre fait moins de 900 px de large (la barre latérale a besoin de place) ; la 3D (≈ 1 Mo) n'est alors pas téléchargée. Les projets se filtrent par catégorie (stages, universitaires, personnels, automatisation) et s'ouvrent dans une fiche au premier plan. La vue classique s'affiche dès la lecture du HTML, sans écran de chargement : le CSS et le script de démarrage sont intégrés à la page. Une politique de sécurité du contenu (CSP) limite les scripts au site lui-même et au script de démarrage, identifié par son empreinte SHA-256. Le formulaire de contact passe par FormSubmit.
 
 ## Construire le site (minification)

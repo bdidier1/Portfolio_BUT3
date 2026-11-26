@@ -683,7 +683,7 @@
     // ---------- Cadre CV (le vrai CV) ----------
     const cvFrame = new T.Group(); cvFrame.position.set(2.0, 1.95, -2.47); room.add(cvFrame);
     box(cvFrame, 0.82, 1.14, 0.04, 0xd4af37, 0, 0, 0);
-    const cvImg = new T.TextureLoader().load('img/cv.webp?v=20261124b');
+    const cvImg = new T.TextureLoader().load('img/cv.webp?v=20261126a');
     cvImg.anisotropy = renderer.capabilities.getMaxAnisotropy();
     const cvFace = new T.Mesh(new T.PlaneGeometry(0.74, 0.74 * 1.4142), new T.MeshBasicMaterial({ map: cvImg }));
     cvFace.position.z = 0.025; cvFrame.add(cvFace);
@@ -1169,7 +1169,7 @@
     let waving = true, typed = -1, lastTyped = 0, lastSlow = -9, lastSky = -9, curDay = 1, frameN = 0, lastHover = -9;
     // Résolution adaptative : si l'appareil peine (moins de ~45 images/s), on réduit la densité de pixels
     const PR_MAX = renderer.getPixelRatio(), PR_MIN = Math.min(PR_MAX, 0.75);
-    let pr = PR_MAX, avg = 1 / 60, adaptT = 0;
+    let pr = PR_MAX, avg = 1 / 60, adaptT = -3, slowChecks = 0;   // adaptT négatif : 3 s de chauffe avant de juger
     function adapt(dt) {
       if (document.hidden || dt <= 0) return;
       avg += (dt - avg) * 0.05;
@@ -1180,6 +1180,11 @@
       if (avg > 1 / 45 && pr > PR_MIN) next = Math.max(PR_MIN, pr - 0.25);
       else if (avg < 1 / 57 && pr < PR_MAX) next = Math.min(PR_MAX, pr + 0.25);
       if (next !== pr) { pr = next; renderer.setPixelRatio(pr); renderer.setSize(W, H); }
+      // Garde-fou : même à la résolution minimale, moins de ~24 images/s pendant plusieurs secondes
+      // => la chambre est trop lourde pour cet appareil, on passe à la vue classique (sauf si le visiteur a forcé la 3D)
+      if (pr <= PR_MIN && avg > 0.042 && !(window.PORTFOLIO && window.PORTFOLIO.force)) {
+        if (++slowChecks >= 4 && handlers.onLost) { slowChecks = -99; handlers.onLost(); }
+      } else if (slowChecks > 0) slowChecks--;
     }
     const dayCol = new T.Color(0xbcd0f0), nightCol = new T.Color(0x3a4a78);
 
