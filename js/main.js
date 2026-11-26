@@ -343,7 +343,15 @@
     sw.setAttribute('aria-label', to3d ? 'Vue 3D : passer à la chambre en 3D' : 'Vue classique : passer à la page sans 3D');
   }
   if (sw && BOOT.mode === 'classic' && !BOOT.gl) sw.remove(); else updateSwitch(null);
-  if (sw) sw.addEventListener('click', () => { try { if (BOOT.mode === 'classic') sessionStorage.setItem('portfolio-force3d', '1'); } catch (e) { /* ignoré */ } });
+  // Le lien change de vue en rechargeant la page : un simple changement de #rubrique ne le ferait pas (même ?vue=3d), d'où le rechargement explicite
+  if (sw) sw.addEventListener('click', (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    e.preventDefault();
+    try { if (BOOT.mode === 'classic') sessionStorage.setItem('portfolio-force3d', '1'); else sessionStorage.removeItem('portfolio-force3d'); } catch (err) { /* ignoré */ }
+    const href = sw.getAttribute('href');
+    try { history.replaceState(null, '', location.pathname + href); } catch (err) { /* ignoré */ }
+    location.reload();
+  });
 
   // ---------- Barre latérale : on peut l'ouvrir et la fermer quand on veut (grand écran) ----------
   const sideBtn = $('#side-toggle');
@@ -428,13 +436,13 @@
       KEYS.forEach((k) => { if (panels[k]) io.observe(panels[k]); });
     }
     // Lien partagé vers une rubrique (#projets) : on y descend directement
-    const go = (k) => { const p = panels[k]; if (p) p.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' }); };
+    const go = (k, instant) => { const p = panels[k]; if (p) p.scrollIntoView({ block: 'start', behavior: instant || reduceMotion ? 'auto' : 'smooth' }); };
     document.addEventListener('click', (e) => {
       const o = e.target.closest('[data-open]');
       if (o) { e.preventDefault(); go(o.dataset.open); }
     });
     const h = BOOT.route || location.hash.slice(1);
-    if (KEYS.includes(h)) requestAnimationFrame(() => go(h));
+    if (KEYS.includes(h)) requestAnimationFrame(() => go(h, true));
     $('#loader').remove();
     if (sw) sw.dataset.ready = '1';
   }

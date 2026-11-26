@@ -40,10 +40,14 @@
     } catch (e) { return false; }
   })();
 
-  // Le bouton « Vue 3D » de la vue classique force la 3D pour cette session (le visiteur a choisi, on n'insiste pas)
-  var force = false;
-  try { force = sessionStorage.getItem('portfolio-force3d') === '1'; } catch (e) { /* ignoré */ }
-  if (asked === 'classique') { try { sessionStorage.removeItem('portfolio-force3d'); } catch (e) { /* ignoré */ } force = false; }
+  // Un lien ?vue=3d (ou le bouton « Vue 3D ») est un choix explicite : on l'honore, sans le contredire par les tests de performance.
+  // Seule l'ouverture sans consigne laisse le site choisir selon l'appareil.
+  var force = asked === '3d';
+  try {
+    if (asked === 'classique') sessionStorage.removeItem('portfolio-force3d');
+    else if (asked === '3d') sessionStorage.setItem('portfolio-force3d', '1');
+    else if (sessionStorage.getItem('portfolio-force3d') === '1') force = true;
+  } catch (e) { /* stockage indisponible */ }
   var mode = asked === 'classique' ? 'classic' : ((slow || weak || soft) && !force ? 'classic' : '3d');
   if (!gl) mode = 'classic';
   window.PORTFOLIO = {
