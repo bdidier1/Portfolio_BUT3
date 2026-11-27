@@ -9,7 +9,7 @@ Portfolio de Baptiste Didier, étudiant en 3e année de BUT Informatique (parcou
 Le contenu suit les attentes du cours « Portfolio – book » :
 
 - **À propos** : présentation courte, qualités, centres d'intérêt, formation en bref
-- **Projets** : le stage de 2e année chez EzDEV en premier (avec les captures du rapport de stage), puis sept projets principaux (ParkTracker, GP Explorer, CutLocal, AUTO YTB, Caisse Twirling, PuissanceX, Boutique de câbles) et une liste « Autres projets » plus discrète (Clip2EP, Unity FPS, Pauvocodeur, Topaz Local, site SFR, BAMM) ; pour chacun : contexte (dates, cadre, équipe), objectif, fonctionnalités, rôle, défi, technologies, captures et lien vers le code
+- **Projets** : le stage de 2e année chez EzDEV en premier (avec les captures du rapport de stage), puis six projets détaillés (ParkTracker, GP Explorer, CutLocal, AUTO YTB, PuissanceX, Boutique de câbles) ; pour chacun : contexte (dates, cadre, équipe), objectif, fonctionnalités, fonctionnement technique, rôle, défi, chiffres clés, technologies, captures et lien vers le code ou le site
 - **Compétences** : techniques (langages, frameworks, données, tests, outils, gestion de projet) et personnelles
 - **Parcours** : formation et expériences
 - **Veille** : sources, sujets suivis et notes de veille rédigées (Python 3.13, WebCodecs, assistants de code IA)
