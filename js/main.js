@@ -652,7 +652,7 @@
       + (lvl ? '<button type="button" class="btn btn--ghost" data-l="ov">Vue d\'ensemble</button>' : ''));
   }
   const VEILLE_TIP = '<span>Cliquez sur un livre pour l\'ouvrir. <span class="muted">Faites glisser pour regarder autour.</span></span>'
-    + '<button type="button" class="btn" data-notes="1">Lire mes notes de veille</button>';
+    + '<button type="button" class="btn" data-notes="1">Lire le blog de veille</button>';
   function onLevel(n, total, item) { lvl = n; lvlTotal = total; lvlItem = item; if (current === 'parcours') levelDock(); }
   function onBook(id, name) {
     if (current !== 'veille') return;

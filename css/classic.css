@@ -458,10 +458,13 @@ html.classic, .classic body { height: auto; }
 /* ---------- Veille : sources, sujets et notes ---------- */
 .classic #p-veille > h2 { margin: 26px 0 10px; font-size: 20px; font-weight: 700; }
 .classic .pills--veille li { font-size: 14px; }
-.classic .vtoc a { background: var(--card2); border-color: var(--sep); border-radius: 14px; padding: 14px 16px; }
+.classic .vtoc a { background: var(--card2); border-color: var(--sep); border-radius: 14px; padding: 14px; gap: 18px; }
 .classic .vtoc a:hover, .classic .vtoc a:focus-visible { border-color: var(--tint); }
-.classic .vtoc strong { color: var(--label); font-size: 15px; font-weight: 600; }
-.classic .vtoc small { color: var(--label2); font-size: 12px; }
+.classic .vtoc strong { color: var(--tint); font-size: 18px; font-weight: 700; letter-spacing: -.02em; }
+.classic .vtoc__sum { font-size: 15px; color: var(--text); }
+.classic .vtoc__by { font-size: 13px; color: var(--label2); }
+.classic .vtoc img { border-radius: 10px; }
+.classic .vnote__cover { border-color: var(--sep); border-radius: 12px; }
 .classic .vtag { background: rgba(63, 185, 80, .14); color: var(--tint); font-size: 12px; }
 .classic .vnote { margin: 0 0 24px; padding: 24px 24px 18px; background: var(--card2); border: 1px solid var(--sep); border-radius: 16px; scroll-margin-top: 80px; }
 .classic .vnote__head { border-color: var(--sep); }
