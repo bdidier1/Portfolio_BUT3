@@ -256,7 +256,18 @@
     const t = name && [...dlgBody.querySelectorAll('[data-anchor]')].find((el) => el.dataset.anchor === name);
     if (!t) return;
     e.preventDefault();
-    t.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
+    // Défilement animé à la main : le « smooth » natif reste parfois bloqué dans une fenêtre modale
+    const from = dlgBody.scrollTop;
+    const to = Math.max(0, from + t.getBoundingClientRect().top - dlgBody.getBoundingClientRect().top - 12);
+    if (reduceMotion) { dlgBody.scrollTop = to; return; }
+    const t0 = performance.now(), dur = 450;
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur);
+      dlgBody.scrollTop = from + (to - from) * (1 - Math.pow(1 - k, 3));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    setTimeout(() => { dlgBody.scrollTop = to; }, dur + 100);   // garantit l'arrivée même si l'animation est freinée
   });
 
   // Boutons de catégorie : Tous, Stages, Universitaires, Personnels, Automatisation
