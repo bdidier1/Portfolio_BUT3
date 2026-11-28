@@ -1,3 +1,6 @@
 node_modules/
 .claude/
 publication/
+# Fichiers intermédiaires du build (déjà intégrés dans index.html)
+css/site.min.css
+js/boot.min.js

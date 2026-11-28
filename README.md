@@ -41,8 +41,8 @@ Le site sert des fichiers minifiés, construits à partir des sources lisibles :
 
 | Sources (à modifier) | Fichier servi (généré) |
 |---|---|
-| `css/style.css` + `css/classic.css` | `css/site.min.css`, intégré directement dans `index.html` |
-| `js/boot.js` | `js/boot.min.js`, intégré dans `index.html` (autorisé par son empreinte dans la CSP) |
+| `css/style.css` + `css/classic.css` | intégrés directement dans `index.html` (`css/site.min.css` n'est qu'un fichier intermédiaire, non versionné) |
+| `js/boot.js` | intégré dans `index.html`, autorisé par son empreinte dans la CSP (`js/boot.min.js` intermédiaire, non versionné) |
 | `js/main.js`, `js/room.js`, `js/weather.js` | `js/*.min.js` |
 
 Après chaque modification d'un fichier CSS ou JS :
