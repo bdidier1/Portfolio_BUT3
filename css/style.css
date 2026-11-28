@@ -632,6 +632,7 @@ body { -webkit-user-select: none; user-select: none; }
 .pmodal .card__file { display: none; }
 .pmodal .card h2 { padding-right: 44px; font-size: 1.25rem; }
 .pmodal .figure--small { max-width: 420px; }
+.pmodal .vnote { scroll-margin-top: 12px; }
 .card__cats { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
 .card__cats span { padding: 2px 10px; border-radius: 999px; background: #0f2417; color: #7ee787; font-size: .72rem; font-weight: 600; }
 .badge--soon { background: #2a2208; color: #f2c94c; }

@@ -83,7 +83,9 @@
     dlgBody.textContent = '';
     const c = document.createElement('div'); c.className = 'card card--panel';
     [...p.children].forEach((ch) => c.append(ch.cloneNode(true)));
-    c.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+    // Les id sont retirés de la copie (ils existent déjà dans la page) mais gardés en data-anchor,
+    // pour que les liens internes (#veille-perf…) descendent jusqu'à l'article dans la fiche
+    c.querySelectorAll('[id]').forEach((el) => { el.dataset.anchor = el.id; el.removeAttribute('id'); });
     const h = c.querySelector('h1'); if (h) { const h2 = document.createElement('h2'); h2.textContent = h.textContent; h.replaceWith(h2); }
     dlgBody.append(c);
     html.classList.add('modal-open');
@@ -246,6 +248,15 @@
   });
   dlgBody.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('zoomable')) { e.preventDefault(); e.target.click(); }
+  });
+  // Lien interne dans une fiche (sommaire du blog) : on descend jusqu'à la cible, dans la fiche elle-même
+  dlgBody.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]'); if (!a) return;
+    const name = a.getAttribute('href').slice(1);
+    const t = name && [...dlgBody.querySelectorAll('[data-anchor]')].find((el) => el.dataset.anchor === name);
+    if (!t) return;
+    e.preventDefault();
+    t.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
   });
 
   // Boutons de catégorie : Tous, Stages, Universitaires, Personnels, Automatisation
